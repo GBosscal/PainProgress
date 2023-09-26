@@ -1,0 +1,7 @@
+sanic
+sanic_ext
+SQLAlchemy
+requests
+pymysql
+alembic
+loguru
