@@ -5,6 +5,7 @@
 @Date: 2023/9/15
 @Description: 
 """
+import traceback
 
 from sqlalchemy import String, Column, Integer, DateTime, Boolean, Enum, VARCHAR, Text, or_, and_
 
@@ -28,7 +29,10 @@ class Feedback(BaseModel):
         self.msg = msg
 
     def to_dict(self):
-        return {"created_time": self.created_time, "receiver": self.receiver, "sender": self.sender, "msg": self.msg}
+        return {
+            "created_time": self.created_time.strftime("%Y-%m-%d %H:%M:%S"), "receiver": self.receiver,
+            "sender": self.sender, "msg": self.msg, "created_timestamp": self.created_time.timestamp()
+        }
 
     @classmethod
     def add_msg(cls, receiver, sender, msg):
@@ -38,6 +42,7 @@ class Feedback(BaseModel):
             session.commit()
             return True
         except Exception:
+            print(traceback.format_exc())
             session.rollback()
             return False
 
@@ -62,7 +67,7 @@ class Feedback(BaseModel):
         data = session.query(cls).filter(
             or_(
                 and_(cls.receiver == receiver, cls.sender == sender),
-                and_(cls.receiver == receiver, cls.sender == sender)
+                and_(cls.sender == receiver, cls.receiver == sender)
             )
-        ).sort(cls.created_time).all()
+        ).order_by(cls.created_time).all()
         return data

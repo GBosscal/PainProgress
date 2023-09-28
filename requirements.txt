@@ -5,3 +5,10 @@ requests
 pymysql
 alembic
 loguru
+numpy
+visualdl
+torch
+torchvision
+opencv-python
+pandas
+PyQt5

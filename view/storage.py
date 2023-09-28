@@ -5,6 +5,7 @@
 @Date: 2023/9/15
 @Description: 
 """
+import os.path
 
 from sanic.views import HTTPMethodView
 from sanic.views import stream
@@ -19,11 +20,18 @@ from utils.storage import build_storage_path
 from utils.storage import storage_data
 
 
+class CreatePainData:
+    pain_data: str
+    patient_id: int
+
+
 class StorageView(HTTPMethodView):
 
     @openapi.summary("新增一条疼痛数据")
     @openapi.description("新增一条疼痛数据")
-    @openapi.body({"pain_data": "疼痛数据", "patient_id": "患者ID"})
+    @openapi.definition(
+        body={"application/json": CreatePainData}
+    )
     @openapi.tag("数据存储")
     async def post(self, request):
         file_data = request.files.get("pain_data")
@@ -33,16 +41,16 @@ class StorageView(HTTPMethodView):
             return response(ErrorCode.UploadDataError)
         return response(ErrorCode.Success, data={"path": file_data.name})
 
-    @openapi.summary("获取一条疼痛数据")
-    @openapi.description("获取一条疼痛数据")
-    @openapi.body({"pain_id": "疼痛数据ID"})
+    @openapi.summary("根据疼痛数据id获取对应的图片")
+    @openapi.description("根据疼痛数据id获取对应的图片")
+    @openapi.parameter("pain_id", location="query")
     @openapi.tag("数据存储")
     async def get(self, request):
         pain_id = request.args.get("pain_id")
         pain_data = await PainService.get_pain_data_by_pain_id(pain_id)
         if not pain_data:
             return response(ErrorCode.PainDataNotExists)
-        file_name = pain_data['pain_data_path']
+        file_name = pain_data['pain_data']
         # 数据库只存储了文件名称，所以要再次拼接
         data_path = build_storage_path(pain_data['patient_id'], file_name)
         # 目前强制指定一个jpeg

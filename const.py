@@ -19,8 +19,8 @@ class DeleteOrNot(EnumBase):
     """
     用户是否被删除的常量定义
     """
-    Deleted = "1"
-    NotDeleted = "0"
+    Deleted = True
+    NotDeleted = False
 
 
 class ErrorCode(EnumBase):

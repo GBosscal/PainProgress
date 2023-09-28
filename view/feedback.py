@@ -15,11 +15,22 @@ from service.feedback import FeedbackService
 from const import ErrorCode
 
 
+class CreateMsg:
+    receiver: int
+    sender: int
+    msg: str
+
+
+class DeleteMsg:
+    msg_id: int
+
+
 class FeedbackView(HTTPMethodView):
 
     @openapi.summary("获取反馈信息")
     @openapi.description("通过receiver，sender获取指定用户之间的信息")
-    @openapi.body({"receiver":"接收人", "sender": "发送人"})
+    @openapi.parameter("receiver", location="query")
+    @openapi.parameter("sender", location="query")
     @openapi.tag("反馈管理")
     async def get(self, request):
         receiver = request.args.get("receiver")
@@ -28,7 +39,9 @@ class FeedbackView(HTTPMethodView):
 
     @openapi.summary("创建一条反馈信息")
     @openapi.description("创建一条反馈信息")
-    @openapi.body({"receiver": "接收人", "sender": "发件人", "msg": "信息"})
+    @openapi.definition(
+        body={"application/json": CreateMsg}
+    )
     @openapi.tag("反馈管理")
     async def post(self, request):
         receiver = request.json.get("receiver")
@@ -39,7 +52,9 @@ class FeedbackView(HTTPMethodView):
 
     @openapi.summary("删除一条反馈信息")
     @openapi.description("删除一条反馈信息")
-    @openapi.body({"msg_id": "反馈信息的id"})
+    @openapi.definition(
+        body={"application/json": DeleteMsg}
+    )
     @openapi.tag("反馈管理")
     async def delete(self, request):
         msg_id = request.json.get("msg_id")

@@ -70,9 +70,9 @@ class UserService:
             return ErrorCode.UserNotExists
         user_detail = user_data.to_dict()
         # 转换医生的id为名称
-        doctor_data = User.query_user_by_id(user_data["doctor_id"])
+        doctor_data = User.query_user_by_id(user_detail["doctor_id"])
         user_detail["doctor_name"] = doctor_data.user_name if doctor_data else ""
         # 转换医院的id为名称
-        hospital_data = Hospital.query_hospital_by_id(user_data["hospital_id"])
-        user_detail["hospital_id"] = hospital_data.name if hospital_data else ""
+        hospital_data = Hospital.query_hospital_by_id(user_detail["hospital_id"])
+        user_detail["hospital_name"] = hospital_data.name if hospital_data else ""
         return user_detail

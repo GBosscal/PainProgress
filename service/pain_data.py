@@ -60,8 +60,8 @@ class PainService:
         :return:
         """
         if not Pain.add_pain_data(
-                patient_id=patient_id, patient_level_custom=pain_level_custom,
-                pain_data_path=pain_data_path
+                patient_id=patient_id, pain_level_custom=pain_level_custom,
+                pain_data=pain_data_path
         ):
             return ErrorCode.PainAddError
         return ErrorCode.Success

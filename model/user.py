@@ -38,13 +38,13 @@ class User(BaseModel):
     def to_dict(self):
         return {
             "user_name": self.user_name, "hospital_id": self.hospital_id,
-            "user_type": UserType[self.user_type].value,
+            "user_type": UserType(self.user_type).value,
             "wechat_id": self.wechat_id, "doctor_id": self.doctor_id,
             "age": self.age
         }
 
     @staticmethod
-    def user_info_checker(user_info):
+    def user_info_checker(user_info,):
         """
         校验用户数据是否符合规定：
         1. 用户名称，医院ID，用户类型，wechatID不能为空。
@@ -56,16 +56,19 @@ class User(BaseModel):
             user_info.get("user_name"),
             user_info.get("hospital_id"),
             user_info.get("user_type"),
-            user_info.get("wechat_id")
         ]):
+            return False
+        if not user_info.get("wechat_id") and not user_info.get("id"):
             return False
         # 转换用户的类型为标准类型
         try:
             user_info["user_type"] = UserType(user_info["user_type"]).value
         except KeyError:
+            print(traceback.format_exc())
             return False
         # 校验患者类型的是否绑定了医生信息
         if user_info.get("user_type") == UserType.PATIENT.value and not user_info.get("doctor_id"):
+            print("2")
             return False
         return True
 

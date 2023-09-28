@@ -57,4 +57,7 @@ class FeedbackService:
         if User.query_user_by_id(receiver) is None or User.query_user_by_id(sender) is None:
             return ErrorCode.UserNotExists
         # 查询信息
-        return Feedback.query_msg_by_receiver_and_sender(receiver, sender)
+        all_msg = Feedback.query_msg_by_receiver_and_sender(receiver, sender)
+        data = [msg.to_dict() for msg in all_msg]
+        print(data)
+        return data

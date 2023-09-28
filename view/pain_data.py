@@ -14,11 +14,27 @@ from service.pain_data import PainService
 from const import ErrorCode
 
 
+class CreatePainData:
+    patient_id: int
+    pain_level_custom: int
+    pain_data_path: str
+
+
+class UpdatePainData:
+    pain_id: int
+    pain_level_custom: int
+    pain_data_path: str
+
+
+class DeletePainData:
+    pain_id: int
+
+
 class PainDataView(HTTPMethodView):
 
     @openapi.summary("获取疼痛数据")
     @openapi.description("通过患者的ID获取疼痛数据")
-    @openapi.body({"patient_id": "患者ID"})
+    @openapi.parameter("patient_id", location="query")
     @openapi.tag("疼痛数据管理")
     async def get(self, request):
         patient_id = request.args.get("patient_id")
@@ -27,7 +43,9 @@ class PainDataView(HTTPMethodView):
 
     @openapi.summary("创建疼痛数据")
     @openapi.description("创建疼痛数据")
-    @openapi.body({"patient_id": "患者ID", "pain_level_custom": "患者自定义的疼痛级别","pain_data_path": "疼痛影像路经"})
+    @openapi.definition(
+        body={"application/json": CreatePainData}
+    )
     @openapi.tag("疼痛数据管理")
     async def post(self, request):
         patient_id = request.json.get("patient_id")
@@ -38,7 +56,9 @@ class PainDataView(HTTPMethodView):
 
     @openapi.summary("更新疼痛数据")
     @openapi.description("更新疼痛数据")
-    @openapi.body({"pain_id": "疼痛数据ID", "pain_level_custom": "患者自定义的疼痛级别", "pain_data_path": "疼痛影像路经"})
+    @openapi.definition(
+        body={"application/json": UpdatePainData}
+    )
     @openapi.tag("疼痛数据管理")
     async def put(self, request):
         pain_id = request.json.get("pain_id")
@@ -49,7 +69,9 @@ class PainDataView(HTTPMethodView):
 
     @openapi.summary("删除疼痛数据")
     @openapi.description("删除疼痛数据")
-    @openapi.body({"pain_id": "疼痛数据ID"})
+    @openapi.definition(
+        body={"application/json": DeletePainData}
+    )
     @openapi.tag("疼痛数据管理")
     async def delete(self, request):
         pain_id = request.json.get("pain_id")
@@ -61,6 +83,12 @@ pain_blueprint = Blueprint("pain", "/pain", version=1)
 pain_blueprint.add_route(PainDataView.as_view(), "")
 
 
+class ImagePainData:
+    pain_data: str
+    patient_id: int
+    pain_level_custom: int
+
+
 class PainDataWithUploadDownloadView(HTTPMethodView):
     """
     这个视图将图片的上传下载均集成到里面了。
@@ -68,7 +96,7 @@ class PainDataWithUploadDownloadView(HTTPMethodView):
 
     @openapi.summary("获取疼痛数据")
     @openapi.description("获取疼痛数据")
-    @openapi.body({"patient_id": "患者ID"})
+    @openapi.parameter("patient_id", location="query")
     @openapi.tag("疼痛数据管理-集成图像处理")
     async def get(self, request):
         patient_id = request.args.get("patient_id")
@@ -77,7 +105,9 @@ class PainDataWithUploadDownloadView(HTTPMethodView):
 
     @openapi.summary("获取疼痛数据")
     @openapi.description("获取疼痛数据")
-    @openapi.body({"pain_data": "患者的疼痛图像", "patient_id": "患者疼痛数据", "pain_level_custom": "患者自定义的疼痛等级"})
+    @openapi.definition(
+        body={"application/form-data": ImagePainData}
+    )
     @openapi.tag("疼痛数据管理-集成图像处理")
     async def post(self, request):
         # 获取图片数据
@@ -90,7 +120,9 @@ class PainDataWithUploadDownloadView(HTTPMethodView):
 
     @openapi.summary("获取疼痛数据")
     @openapi.description("获取疼痛数据")
-    @openapi.body({"pain_data": "患者的疼痛图像", "pain_id": "疼痛数据ID", "pain_level_custom": "患者自定义的疼痛等级"})
+    @openapi.definition(
+        body={"application/form-data": ImagePainData}
+    )
     @openapi.tag("疼痛数据管理-集成图像处理")
     async def put(self, request):
         # 获取图片数据
@@ -103,7 +135,9 @@ class PainDataWithUploadDownloadView(HTTPMethodView):
 
     @openapi.summary("删除疼痛数据")
     @openapi.description("删除疼痛数据")
-    @openapi.body({ "pain_id": "疼痛数据ID"})
+    @openapi.definition(
+        body={"application/json": DeletePainData}
+    )
     @openapi.tag("疼痛数据管理-集成图像处理")
     async def delete(self, request):
         pain_id = request.json.get("pain_id")

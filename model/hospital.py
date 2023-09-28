@@ -6,6 +6,7 @@
 @Description:
     医院表的具体描述。
 """
+import traceback
 
 from sqlalchemy import String, Column, Integer, DateTime, Boolean, Enum, VARCHAR
 

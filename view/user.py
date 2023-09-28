@@ -7,11 +7,33 @@ from service.user import UserService
 from const import ErrorCode, ErrorMsg
 
 
+class CreateUser:
+    user_name: str
+    hospital_id: int
+    user_type: str
+    wechat_id: str
+    doctor_id: int
+    age: int
+
+
+class UpdateUser:
+    user_name: str
+    hospital_id: int
+    user_type: str
+    doctor_id: int
+    age: int
+    id: int
+
+
+class DeleteUser:
+    user_id: int
+
+
 class UserView(HTTPMethodView):
 
     @openapi.summary("获取用户的信息")
     @openapi.description("获取用户的信息")
-    @openapi.definition(body={"user_id": "用户ID"})
+    @openapi.parameter("user_id", location="query")
     @openapi.tag("user")
     async def get(self, request):
         user_id = request.args.get("user_id")
@@ -23,10 +45,7 @@ class UserView(HTTPMethodView):
     @openapi.summary("创建用户")
     @openapi.description("创建用户")
     @openapi.definition(
-        body={
-            "user_name": "用户名称", "hospital_id": "医院ID", "user_type": "用户类型（doctor,patient)",
-            "wechat_id": "微信ID", "doctor_id": "医生ID", "age": "年龄"
-        }
+        body={"application/json": CreateUser}
     )
     @openapi.tag("user")
     async def post(self, request):
@@ -37,10 +56,7 @@ class UserView(HTTPMethodView):
     @openapi.summary("更新用户")
     @openapi.description("更新用户")
     @openapi.definition(
-        body={
-            "user_name": "用户名称", "hospital_id": "医院ID", "user_type": "用户类型（doctor,patient)",
-            "doctor_id": "医生ID", "age": "年龄", "id": "用户ID"
-        }
+        body={"application/json": UpdateUser}
     )
     @openapi.tag("user")
     async def put(self, request):
@@ -50,7 +66,9 @@ class UserView(HTTPMethodView):
 
     @openapi.summary("删除用户")
     @openapi.description("删除用户")
-    @openapi.definition(body={"user_id": "用户ID"})
+    @openapi.definition(
+        body={"application/json": DeleteUser}
+    )
     @openapi.tag("user")
     async def delete(self, request):
         user_id = request.json.get("user_id")
@@ -59,6 +77,7 @@ class UserView(HTTPMethodView):
         service_code = await UserService.delete_user(user_id)
         if service_code != ErrorCode.Success:
             return response(service_code)
+        return response(ErrorCode.Success)
 
 
 user_blueprint = Blueprint("user", "/user", version=1)
