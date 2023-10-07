@@ -90,7 +90,7 @@ class UserService:
         users = []
         for user in user_data:
             # 转换医院的id为名称
-            hospital_data = Hospital.query_hospital_by_id(user["hospital_id"])
+            hospital_data = Hospital.query_hospital_by_id(user.hospital_id)
             users.append({
                 "name": user.user_name, "id": user.id,
                 "hospital_name": hospital_data.name if hospital_data else ""
