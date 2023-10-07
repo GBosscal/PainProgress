@@ -12,7 +12,7 @@ def create_app():
     # 应用的健康检查配置
     app.config.HEALTH = True
     # 注册路由
-    from view.user import user_blueprint
+    from view.user import user_blueprint, patient_blueprint
     from view.feedback import feedback_blueprint
     from view.storage import storage_blueprint
     from view.pain_data import pain_blueprint
@@ -23,11 +23,12 @@ def create_app():
     app.blueprint(storage_blueprint)
     app.blueprint(pain_blueprint)
     app.blueprint(hospital_blueprint)
+    app.blueprint(patient_blueprint)
 
     # 修改apidoc的定义
     app.ext.openapi.describe(
         "疼痛分析系统的后端服务",
-        version="0.0.1",
+        version="0.0.2",
         description=(
             """
             # 疼痛分析系统

@@ -96,3 +96,6 @@ class PatientView(HTTPMethodView):
 
 user_blueprint = Blueprint("user", "/user", version=1)
 user_blueprint.add_route(UserView.as_view(), "")
+
+patient_blueprint = Blueprint("patient", "/patient", version=1)
+patient_blueprint.add_route(PatientView.as_view(), uri="")
