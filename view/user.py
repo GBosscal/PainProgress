@@ -80,5 +80,19 @@ class UserView(HTTPMethodView):
         return response(ErrorCode.Success)
 
 
+class PatientView(HTTPMethodView):
+
+    @openapi.summary("获取特定医生下的患者")
+    @openapi.description("通过医生的ID获取该医生下所有患者的ID以及名称")
+    @openapi.tag("patient")
+    @openapi.parameter("doctor_id", location="query")
+    async def get(self, request):
+        doctor_id = request.args.get("doctor_id")
+        if not doctor_id:
+            return response(ErrorCode.UserIDMissing)
+        result = UserService.get_user_info_by_doctor_id(doctor_id)
+        return response(ErrorCode.Success, result)
+
+
 user_blueprint = Blueprint("user", "/user", version=1)
 user_blueprint.add_route(UserView.as_view(), "")

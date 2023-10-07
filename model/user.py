@@ -148,4 +148,5 @@ class User(BaseModel):
         :param doctor_id: 医生的ID
         :return:
         """
-        return session.query(cls).filter_by(doctor_id=doctor_id, is_deleted=DeleteOrNot.NotDeleted.value).first()
+        return session.query(cls).filter_by(doctor_id=doctor_id, is_deleted=DeleteOrNot.NotDeleted.value).all()
+

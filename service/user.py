@@ -76,3 +76,23 @@ class UserService:
         hospital_data = Hospital.query_hospital_by_id(user_detail["hospital_id"])
         user_detail["hospital_name"] = hospital_data.name if hospital_data else ""
         return user_detail
+
+    @classmethod
+    async def get_user_info_by_doctor_id(cls, doctor_id):
+        """
+        通过医生ID查询用户信息
+        :param doctor_id:
+        :return:
+        """
+        user_data = User.query_user_by_doctor_id(doctor_id)
+        if not user_data:
+            return []
+        users = []
+        for user in user_data:
+            # 转换医院的id为名称
+            hospital_data = Hospital.query_hospital_by_id(user["hospital_id"])
+            users.append({
+                "name": user.user_name, "id": user.id,
+                "hospital_name": hospital_data.name if hospital_data else ""
+            })
+        return users
