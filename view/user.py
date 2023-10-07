@@ -90,7 +90,7 @@ class PatientView(HTTPMethodView):
         doctor_id = request.args.get("doctor_id")
         if not doctor_id:
             return response(ErrorCode.UserIDMissing)
-        result = UserService.get_user_info_by_doctor_id(doctor_id)
+        result = await UserService.get_user_info_by_doctor_id(doctor_id)
         return response(ErrorCode.Success, result)
 
 
