@@ -6,6 +6,7 @@
 @Description: 
 """
 from utils.wechat_scripts import get_user_info_by_code
+from service.user import UserService
 from model.user import User
 from const import ErrorCode
 
@@ -25,4 +26,7 @@ class LoginService:
         if not user_info:
             return ErrorCode.UserNotRegistry, None
         else:
-            return ErrorCode.Success, user_info.id
+            # 直接将用户信息返回给前端
+            user_info = user_info.to_dict()
+            user_info = UserService.update_user_info(user_info)
+            return ErrorCode.Success, user_info

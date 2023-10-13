@@ -22,8 +22,8 @@ class LoginView(HTTPMethodView):
     @openapi.tag("login")
     async def get(self, request):
         code = request.args.get("code")
-        service_code, user_id = LoginService.login(code)
-        return response(service_code, {"id": user_id})
+        service_code, user_info = LoginService.login(code)
+        return response(service_code, user_info)
 
 
 login_blueprint = Blueprint("login", "/login", version=1)

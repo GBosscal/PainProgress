@@ -38,10 +38,9 @@ def base64_to_binary(base64_string):
     return base64.b64decode(base64_string)
 
 
-def get_token(code):
-    # 去请求微信，同时获取到
+def verif_token(token):
     pass
 
 
-def verif_token(token):
+def create_token(user_id):
     pass

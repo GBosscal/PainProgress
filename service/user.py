@@ -65,6 +65,16 @@ class UserService:
             return ErrorCode.UserDeleteError
         return ErrorCode.Success
 
+    @staticmethod
+    async def update_user_info(user_detail:dict):
+        # 转换医生的id为名称
+        doctor_data = User.query_user_by_id(user_detail["doctor_id"])
+        user_detail["doctor_name"] = doctor_data.user_name if doctor_data else ""
+        # 转换医院的id为名称
+        hospital_data = Hospital.query_hospital_by_id(user_detail["hospital_id"])
+        user_detail["hospital_name"] = hospital_data.name if hospital_data else ""
+        return user_detail
+
     @classmethod
     async def get_user(cls, user_id):
         """
@@ -76,12 +86,7 @@ class UserService:
         if not user_data:
             return ErrorCode.UserNotExists
         user_detail = user_data.to_dict()
-        # 转换医生的id为名称
-        doctor_data = User.query_user_by_id(user_detail["doctor_id"])
-        user_detail["doctor_name"] = doctor_data.user_name if doctor_data else ""
-        # 转换医院的id为名称
-        hospital_data = Hospital.query_hospital_by_id(user_detail["hospital_id"])
-        user_detail["hospital_name"] = hospital_data.name if hospital_data else ""
+        user_detail = await cls.update_user_info(user_detail)
         return user_detail
 
     @classmethod

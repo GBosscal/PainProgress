@@ -17,6 +17,7 @@ def create_app():
     from view.storage import storage_blueprint
     from view.pain_data import pain_blueprint
     from view.hospital import hospital_blueprint
+    from view.login import login_blueprint
 
     app.blueprint(user_blueprint)
     app.blueprint(feedback_blueprint)
@@ -24,6 +25,7 @@ def create_app():
     app.blueprint(pain_blueprint)
     app.blueprint(hospital_blueprint)
     app.blueprint(patient_blueprint)
+    app.blueprint(login_blueprint)
 
     # 修改apidoc的定义
     app.ext.openapi.describe(
