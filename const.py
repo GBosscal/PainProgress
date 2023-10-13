@@ -6,6 +6,15 @@ LogPath = "logs"
 # 疼痛数据存储的路经
 PainDataPath = "pain_data"
 
+# Token密钥
+AppSecretKey = b'painData12345678'
+
+# APP ID
+AppID = "wx9acf3f3f48c20d8d"
+
+# APP Secret
+AppSecret = "93e62d1d3535a4abb8ebcd37b0dcc4f0"
+
 
 class UserType(EnumBase):
     """
@@ -37,6 +46,7 @@ class ErrorCode(EnumBase):
     UserUpdateError = "10000104"
     UserIDMissing = "10000105"
     UserDeleteError = "10000106"
+    UserNotRegistry = "10000107"
 
     # 医院异常
     HospitalExists = "100000201"
@@ -60,6 +70,9 @@ class ErrorCode(EnumBase):
     DeleteMsgError = "10000502"
     MsgNotExists = "10000503"
 
+    # 微信请求异常
+    GetAccessTokenError = "10000601"
+
 
 class ErrorMsg(EnumBase):
     """
@@ -75,6 +88,7 @@ class ErrorMsg(EnumBase):
     UserUpdateError = "用户更新失败"
     UserIDMissing = "用户ID缺失"
     UserDeleteError = "用户删除异常"
+    UserNotRegistry = "用户还没注册"
 
     # 医院异常
     HospitalExists = "医院已经存在"
@@ -97,3 +111,7 @@ class ErrorMsg(EnumBase):
     AddMsgError = "新增反馈失败"
     DeleteMsgError = "删除反馈失败"
     MsgNotExists = "反馈不存在"
+
+
+class RedisKey:
+    AccessTokenKey = "wechat_access_token"

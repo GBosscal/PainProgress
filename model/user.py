@@ -25,13 +25,13 @@ class User(BaseModel):
     doctor_id = Column(Integer, nullable=True)  # 医生ID
     user_type = Column(Enum(UserType), nullable=False)  # 用户类型
     age = Column(Integer, nullable=True)  # 年龄
-    wechat_id = Column(VARCHAR(64), nullable=False)  # 微信ID（注册后应该能获取）
+    unionid = Column(VARCHAR(64), nullable=False)  # 微信ID（注册后应该能获取）
 
-    def __init__(self, user_name, hospital_id, user_type, wechat_id, doctor_id=None, age=None):
+    def __init__(self, user_name, hospital_id, user_type, unionid, doctor_id=None, age=None):
         self.user_name = user_name
         self.hospital_id = hospital_id
         self.user_type = user_type
-        self.wechat_id = wechat_id
+        self.unionid = unionid
         self.doctor_id = doctor_id
         self.age = age
 
@@ -39,7 +39,7 @@ class User(BaseModel):
         return {
             "user_name": self.user_name, "hospital_id": self.hospital_id,
             "user_type": UserType(self.user_type).value,
-            "wechat_id": self.wechat_id, "doctor_id": self.doctor_id,
+            "unionid": self.unionid, "doctor_id": self.doctor_id,
             "age": self.age
         }
 
@@ -58,7 +58,7 @@ class User(BaseModel):
             user_info.get("user_type"),
         ]):
             return False
-        if not user_info.get("wechat_id") and not user_info.get("id"):
+        if not user_info.get("unionid") and not user_info.get("id"):
             return False
         # 转换用户的类型为标准类型
         try:
@@ -73,13 +73,13 @@ class User(BaseModel):
         return True
 
     @classmethod
-    def query_user_by_wechat_id(cls, wechat_id):
+    def query_user_by_unionid(cls, unionid):
         """
-        通过wechat_id查询用户
-        :param wechat_id:
+        通过unionid查询用户
+        :param unionid:
         :return:
         """
-        return session.query(cls).filter_by(wechat_id=wechat_id, is_deleted=DeleteOrNot.NotDeleted.value).first()
+        return session.query(cls).filter_by(unionid=unionid, is_deleted=DeleteOrNot.NotDeleted.value).first()
 
     @classmethod
     def query_user_by_id(cls, user_id):
@@ -103,6 +103,7 @@ class User(BaseModel):
             session.commit()
             return True
         except Exception:
+            print(traceback.format_exc())
             session.rollback()
             return False
 

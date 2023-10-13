@@ -11,7 +11,7 @@ class CreateUser:
     user_name: str
     hospital_id: int
     user_type: str
-    wechat_id: str
+    unionid: str
     doctor_id: int
     age: int
 
@@ -22,11 +22,11 @@ class UpdateUser:
     user_type: str
     doctor_id: int
     age: int
-    id: int
+    id: str
 
 
 class DeleteUser:
-    user_id: int
+    user_id: str
 
 
 class UserView(HTTPMethodView):

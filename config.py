@@ -28,7 +28,14 @@ class SystemConfig:
     SysWorkerNum = os.environ.get("system_worker", 10)
 
 
-class Config(MysqlConfig, SystemConfig):
+class RedisConfig:
+    RedisHost = os.environ.get("redis_host", "127.0.0.1")
+    RedisPort = os.environ.get("redis_port", 6379)
+    RedisPSWD = os.environ.get("redis_pswd", "painData13579@!@!@!")
+    RedisDataBase = int(os.environ.get("redis_db", "0"))
+
+
+class Config(MysqlConfig, SystemConfig, RedisConfig):
 
     @classmethod
     def get_mysql_url(cls):

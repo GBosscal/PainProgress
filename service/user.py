@@ -16,7 +16,7 @@ class UserService:
         if not User.user_info_checker(user_info):
             return ErrorCode.UserInfoError
         # 校验用户（同一个微信ID）是否存在
-        if User.query_user_by_wechat_id(user_info["wechat_id"]) is not None:
+        if User.query_user_by_unionid(user_info["unionid"]) is not None:
             return ErrorCode.UserAlreadyExists
         # 新增用户
         if not User.add_user(user_info):
