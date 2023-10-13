@@ -28,5 +28,5 @@ class LoginService:
         else:
             # 直接将用户信息返回给前端
             user_info = user_info.to_dict()
-            user_info = UserService.update_user_info(user_info)
+            user_info = await UserService.update_user_info(user_info)
             return ErrorCode.Success, user_info

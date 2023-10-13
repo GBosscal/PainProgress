@@ -24,7 +24,7 @@ class LoginView(HTTPMethodView):
         code = request.args.get("code")
         if not code:
             return response(ErrorCode.ParamsMission)
-        service_code, user_info = LoginService.login(code)
+        service_code, user_info = await LoginService.login(code)
         return response(service_code, user_info)
 
 
