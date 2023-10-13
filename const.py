@@ -114,6 +114,9 @@ class ErrorMsg(EnumBase):
     DeleteMsgError = "删除反馈失败"
     MsgNotExists = "反馈不存在"
 
+    # 微信异常
+    GetAccessTokenError = "获取微信token异常"
+
 
 class RedisKey:
     AccessTokenKey = "wechat_access_token"
