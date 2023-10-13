@@ -36,6 +36,7 @@ def get_user_info_by_code(code):
     if response.status_code != 200:
         return ErrorCode.GetAccessTokenError, None
     data = response.json()
-    if data.get("errcode") != 0:
+    error_code = data.get("errcode")
+    if error_code and error_code != 0:
         return ErrorCode.GetAccessTokenError, None
     return ErrorCode.Success, data
