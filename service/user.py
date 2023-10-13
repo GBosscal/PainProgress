@@ -1,6 +1,7 @@
 from model.user import User
 from model.hospital import Hospital
 from const import ErrorCode
+from utils.wechat_scripts import get_user_info_by_code
 
 
 class UserService:
@@ -12,6 +13,12 @@ class UserService:
         :param user_info:
         :return:
         """
+        # 这时候前端会传入code，以此获取openid
+        status, user_data = get_user_info_by_code(user_info["code"])
+        if status:
+            return status
+        # 暂时使用openid，充当unionid
+        user_info["unionid"] = user_data["openid"]
         # 检验数据是否缺失
         if not User.user_info_checker(user_info):
             return ErrorCode.UserInfoError
