@@ -15,7 +15,7 @@ class UserService:
         """
         # 这时候前端会传入code，以此获取openid
         status, user_data = get_user_info_by_code(user_info["code"])
-        if status:
+        if status != ErrorCode.Success:
             return status
         # 暂时使用openid，充当unionid
         user_info["unionid"] = user_data["openid"]

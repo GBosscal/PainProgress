@@ -17,7 +17,7 @@ class LoginService:
     async def login(cls, code):
         # 请求微信官方，
         status, user_data = get_user_info_by_code(code)
-        if status:
+        if status != ErrorCode.Success:
             return status, None
         # 暂时先用openID
         user_code = user_data.get("openid")
@@ -30,3 +30,4 @@ class LoginService:
             user_info = user_info.to_dict()
             user_info = await UserService.update_user_info(user_info)
             return ErrorCode.Success, user_info
+
