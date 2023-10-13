@@ -37,6 +37,7 @@ class ErrorCode(EnumBase):
     错误代码的常量定义
     """
     Success = "0"
+    ParamsMission = "101"
 
     # 用户异常
     UserInfoError = "10000100"
@@ -79,6 +80,7 @@ class ErrorMsg(EnumBase):
     错误信息的常量定义
     """
     Success = "操作成功"
+    ParamsMission = "必要参数缺失"
 
     # 用户异常
     UserInfoError = "用户信息校验异常"

@@ -22,6 +22,8 @@ class LoginView(HTTPMethodView):
     @openapi.tag("login")
     async def get(self, request):
         code = request.args.get("code")
+        if not code:
+            return response(ErrorCode.ParamsMission)
         service_code, user_info = LoginService.login(code)
         return response(service_code, user_info)
 
