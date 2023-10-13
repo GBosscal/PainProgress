@@ -11,7 +11,7 @@ class CreateUser:
     user_name: str
     hospital_id: int
     user_type: str
-    unionid: str
+    code: str
     doctor_id: int
     age: int
 
