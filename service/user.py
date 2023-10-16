@@ -31,9 +31,12 @@ class UserService:
         if User.query_user_by_unionid(user_info["unionid"]) is not None:
             return ErrorCode.UserAlreadyExists
         # 新增用户
-        if not User.add_user(user_info):
-            return ErrorCode.UserAddError
-        return ErrorCode.Success
+        status, user_id = User.add_user(user_info)
+        if not status:
+            return ErrorCode.UserAddError, None
+        user_info.update({"id": user_id})
+        user_info.pop("unionid", None)
+        return ErrorCode.Success, user_info
 
     @classmethod
     async def update_user(cls, user_info):

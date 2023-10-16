@@ -37,10 +37,8 @@ class User(BaseModel):
 
     def to_dict(self):
         return {
-            "user_name": self.user_name, "hospital_id": self.hospital_id,
-            "user_type": UserType(self.user_type).value,
-            "unionid": self.unionid, "doctor_id": self.doctor_id,
-            "age": self.age
+            "user_name": self.user_name, "hospital_id": self.hospital_id, "age": self.age,
+            "user_type": UserType(self.user_type).value, "doctor_id": self.doctor_id, "id": self.id,
         }
 
     @staticmethod
@@ -101,11 +99,11 @@ class User(BaseModel):
             new_user = cls(**user_info)
             session.add(new_user)
             session.commit()
-            return True
+            return True, new_user.id
         except Exception:
             print(traceback.format_exc())
             session.rollback()
-            return False
+            return False, None
 
     @classmethod
     def update_user(cls, user_info, user_data=None):

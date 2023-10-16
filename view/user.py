@@ -50,8 +50,8 @@ class UserView(HTTPMethodView):
     @openapi.tag("user")
     async def post(self, request):
         request_body = request.json
-        service_code = await UserService.add_user(request_body)
-        return response(service_code)
+        service_code, user_info = await UserService.add_user(request_body)
+        return response(service_code, user_info)
 
     @openapi.summary("更新用户")
     @openapi.description("更新用户")
