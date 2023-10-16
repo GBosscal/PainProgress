@@ -55,6 +55,7 @@ class ErrorCode(EnumBase):
     HospitalNotExists = "10000203"
     HospitalUpdateError = "10000204"
     HospitalDeleteError = "10000205"
+    HospitalIDMissing = "10000305"
 
     # 疼痛数据异常
     PainAddError = "10000301"
@@ -98,6 +99,7 @@ class ErrorMsg(EnumBase):
     HospitalNotExists = "医院不存在"
     HospitalUpdateError = "医院更新异常"
     HospitalDeleteError = "医院删除异常"
+    HospitalIDMissing = "医院ID缺失"
 
     # 疼痛数据异常
     PainAddError = "疼痛数据新增异常"

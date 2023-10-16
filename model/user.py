@@ -44,7 +44,7 @@ class User(BaseModel):
         }
 
     @staticmethod
-    def user_info_checker(user_info,):
+    def user_info_checker(user_info, ):
         """
         校验用户数据是否符合规定：
         1. 用户名称，医院ID，用户类型，wechatID不能为空。
@@ -151,3 +151,14 @@ class User(BaseModel):
         """
         return session.query(cls).filter_by(doctor_id=doctor_id, is_deleted=DeleteOrNot.NotDeleted.value).all()
 
+    @classmethod
+    def query_user_by_hospital_id(cls, hospital_id, user_type=None):
+        """
+        通过医院的ID查询用户信息
+        """
+        if not user_type:
+            return session.query(cls).filter_by(hospital_id=hospital_id, is_deleted=DeleteOrNot.NotDeleted.value).all()
+        else:
+            return session.query(cls).filter_by(
+                hospital_id=hospital_id, user_type=user_type, is_deleted=DeleteOrNot.NotDeleted.value
+            ).all()

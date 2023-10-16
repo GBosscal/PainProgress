@@ -112,3 +112,16 @@ class UserService:
                 "hospital_name": hospital_data.name if hospital_data else ""
             })
         return users
+
+    @classmethod
+    async def get_user_info_by_hospital_id(cls, hospital_id):
+        """
+        通过医院ID查询医生
+        """
+        all_user_info = []
+        user_data = User.query_user_by_hospital_id(hospital_id)
+        for user in user_data:
+            user_info = cls.update_user_info(user.to_dict())
+            all_user_info.append(user_info)
+        return all_user_info
+
