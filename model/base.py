@@ -14,7 +14,7 @@ class BaseModel(Base):
         data = uuid.uuid4()
         return str(data)
 
-    id = Column(VARCHAR(36), primary_key=True, default=get_new_uuid())
+    id = Column(VARCHAR(36), primary_key=True, default=get_new_uuid)
     created_time = Column(DateTime, default=datetime.now)
     updated_time = Column(DateTime, default=datetime.now, onupdate=datetime.now)
     is_deleted = Column(Boolean, default=False)
