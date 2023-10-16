@@ -9,18 +9,18 @@ from const import ErrorCode, ErrorMsg
 
 class CreateUser:
     user_name: str
-    hospital_id: int
+    hospital_id: str
     user_type: str
     code: str
-    doctor_id: int
+    doctor_id: str
     age: int
 
 
 class UpdateUser:
     user_name: str
-    hospital_id: int
+    hospital_id: str
     user_type: str
-    doctor_id: int
+    doctor_id: str
     age: int
     id: str
 

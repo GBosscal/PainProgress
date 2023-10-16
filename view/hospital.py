@@ -21,11 +21,11 @@ class HospitalData:
 
 class UpdateHospital:
     name: str
-    id: int
+    id: str
 
 
 class DeleteHospital:
-    id: int
+    id: str
 
 
 class HospitalView(HTTPMethodView):

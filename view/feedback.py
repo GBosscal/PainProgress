@@ -16,13 +16,13 @@ from const import ErrorCode
 
 
 class CreateMsg:
-    receiver: int
-    sender: int
+    receiver: str
+    sender: str
     msg: str
 
 
 class DeleteMsg:
-    msg_id: int
+    msg_id: str
 
 
 class FeedbackView(HTTPMethodView):

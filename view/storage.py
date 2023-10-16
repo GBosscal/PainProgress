@@ -22,7 +22,7 @@ from utils.storage import storage_data
 
 class CreatePainData:
     pain_data: str
-    patient_id: int
+    patient_id: str
 
 
 class StorageView(HTTPMethodView):

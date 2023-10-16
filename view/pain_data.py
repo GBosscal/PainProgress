@@ -15,19 +15,19 @@ from const import ErrorCode
 
 
 class CreatePainData:
-    patient_id: int
+    patient_id: str
     pain_level_custom: int
     pain_data_path: str
 
 
 class UpdatePainData:
-    pain_id: int
+    pain_id: str
     pain_level_custom: int
     pain_data_path: str
 
 
 class DeletePainData:
-    pain_id: int
+    pain_id: str
 
 
 class PainDataView(HTTPMethodView):

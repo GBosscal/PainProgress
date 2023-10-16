@@ -27,7 +27,7 @@ class User(BaseModel):
     age = Column(Integer, nullable=True)  # 年龄
     unionid = Column(VARCHAR(64), nullable=False)  # 微信ID（注册后应该能获取）
 
-    def __init__(self, user_name, hospital_id, user_type, unionid, doctor_id=None, age=None):
+    def __init__(self, user_name, hospital_id, user_type, unionid, doctor_id=None, age=None, **kwargs):
         self.user_name = user_name
         self.hospital_id = hospital_id
         self.user_type = user_type
