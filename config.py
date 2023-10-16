@@ -24,13 +24,14 @@ class MysqlConfig:
 
 class SystemConfig:
     SysHost = os.environ.get("system_host", "0.0.0.0")
-    SysPort = os.environ.get("system_port", 25800)
-    SysWorkerNum = os.environ.get("system_worker", 10)
+    SysPort = int(os.environ.get("system_port", "25800"))
+    SysWorkerNum = int(os.environ.get("system_worker", "10"))
+    SystemTest = os.environ.get("system_test", "false")
 
 
 class RedisConfig:
     RedisHost = os.environ.get("redis_host", "127.0.0.1")
-    RedisPort = os.environ.get("redis_port", 6379)
+    RedisPort = int(os.environ.get("redis_port", "6379"))
     RedisPSWD = os.environ.get("redis_pswd", "painData13579@!@!@!")
     RedisDataBase = int(os.environ.get("redis_db", "0"))
 

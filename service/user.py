@@ -2,7 +2,8 @@ from model.user import User
 from model.hospital import Hospital
 from const import ErrorCode
 from utils.wechat_scripts import get_user_info_by_code
-
+from config import Config
+from uuid import uuid4
 
 class UserService:
 
@@ -13,12 +14,15 @@ class UserService:
         :param user_info:
         :return:
         """
-        # 这时候前端会传入code，以此获取openid
-        status, user_data = get_user_info_by_code(user_info["code"])
-        if status != ErrorCode.Success:
-            return status
-        # 暂时使用openid，充当unionid
-        user_info["unionid"] = user_data["openid"]
+        # 这时候前端会传入code，以此获取openid(如果测试标识存在，则生成随机的unionid
+        if Config.SystemTest == "true":
+            user_info["unionid"] = str(uuid4())
+        else:
+            status, user_data = get_user_info_by_code(user_info["code"])
+            if status != ErrorCode.Success:
+                return status
+            # 暂时使用openid，充当unionid
+            user_info["unionid"] = user_data["openid"]
         # 检验数据是否缺失
         if not User.user_info_checker(user_info):
             return ErrorCode.UserInfoError

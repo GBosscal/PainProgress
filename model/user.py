@@ -21,8 +21,8 @@ class User(BaseModel):
     __tablename__ = "user"
 
     user_name = Column(VARCHAR(32), nullable=False)  # 用户名称
-    hospital_id = Column(Integer, nullable=False)  # 医院ID
-    doctor_id = Column(Integer, nullable=True)  # 医生ID
+    hospital_id = Column(VARCHAR(36), nullable=False)  # 医院ID
+    doctor_id = Column(VARCHAR(36), nullable=True)  # 医生ID
     user_type = Column(Enum(UserType), nullable=False)  # 用户类型
     age = Column(Integer, nullable=True)  # 年龄
     unionid = Column(VARCHAR(64), nullable=False)  # 微信ID（注册后应该能获取）
