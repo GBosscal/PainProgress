@@ -84,7 +84,7 @@ class PatientView(HTTPMethodView):
 
     @openapi.summary("获取特定医生下的患者")
     @openapi.description("通过医生的ID获取该医生下所有患者的ID以及名称")
-    @openapi.tag("patient")
+    @openapi.tag("user")
     @openapi.parameter("doctor_id", location="query")
     async def get(self, request):
         doctor_id = request.args.get("doctor_id")
@@ -98,7 +98,7 @@ class DoctorView(HTTPMethodView):
 
     @openapi.summary("获取特定医院下的医生")
     @openapi.description("获取特定医院下的医生")
-    @openapi.tag("hospital")
+    @openapi.tag("user")
     @openapi.parameter("hospital_id", location="query")
     async def get(self, request):
         hospital_id = request.args.get("hospital_id")
@@ -111,7 +111,7 @@ class DoctorView(HTTPMethodView):
 user_blueprint = Blueprint("user", "/user", version=1)
 user_blueprint.add_route(UserView.as_view(), "")
 user_blueprint.add_route(PatientView.as_view(), uri="/patient")
-user_blueprint.add_route(PatientView.as_view(), uri="/doctor")
+user_blueprint.add_route(DoctorView.as_view(), uri="/doctor")
 
 # patient_blueprint = Blueprint("patient", "/user", version=1)
 # patient_blueprint.add_route(PatientView.as_view(), uri="/patient")

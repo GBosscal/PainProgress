@@ -1,9 +1,10 @@
 from model.user import User
 from model.hospital import Hospital
-from const import ErrorCode
+from const import ErrorCode, UserType
 from utils.wechat_scripts import get_user_info_by_code
 from config import Config
 from uuid import uuid4
+
 
 class UserService:
 
@@ -70,7 +71,7 @@ class UserService:
         return ErrorCode.Success
 
     @staticmethod
-    async def update_user_info(user_detail:dict):
+    async def update_user_info(user_detail: dict):
         # 转换医生的id为名称
         doctor_data = User.query_user_by_id(user_detail["doctor_id"])
         user_detail["doctor_name"] = doctor_data.user_name if doctor_data else ""
@@ -119,9 +120,8 @@ class UserService:
         通过医院ID查询医生
         """
         all_user_info = []
-        user_data = User.query_user_by_hospital_id(hospital_id)
+        user_data = User.query_user_by_hospital_id(hospital_id, user_type=UserType.DOCTOR)
         for user in user_data:
-            user_info = cls.update_user_info(user.to_dict())
+            user_info = await cls.update_user_info(user.to_dict())
             all_user_info.append(user_info)
         return all_user_info
-
