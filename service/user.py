@@ -21,15 +21,15 @@ class UserService:
         else:
             status, user_data = get_user_info_by_code(user_info["code"])
             if status != ErrorCode.Success:
-                return status
+                return status,None
             # 暂时使用openid，充当unionid
             user_info["unionid"] = user_data["openid"]
         # 检验数据是否缺失
         if not User.user_info_checker(user_info):
-            return ErrorCode.UserInfoError
+            return ErrorCode.UserInfoError, None
         # 校验用户（同一个微信ID）是否存在
         if User.query_user_by_unionid(user_info["unionid"]) is not None:
-            return ErrorCode.UserAlreadyExists
+            return ErrorCode.UserAlreadyExists, None
         # 新增用户
         status, user_id = User.add_user(user_info)
         if not status:
