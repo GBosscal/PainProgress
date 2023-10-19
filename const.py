@@ -16,6 +16,15 @@ AppID = "wx9acf3f3f48c20d8d"
 AppSecret = "93e62d1d3535a4abb8ebcd37b0dcc4f0"
 
 
+class TestUser(EnumBase):
+    """
+    测试用户 code -> unionid
+    """
+    f331bf8eb065 = "35c713b9-287e-43be-ac2f-3b815a758842"  # 医生A
+    dde666c09144 = "74aab67e-c175-4b31-b3db-d936a525ec55"  # 患者A
+    ab0e85b60969 = "822c957a-f219-487d-85f8-f934fcf94c41"  # 患者B
+
+
 class UserType(EnumBase):
     """
     用户类型的常量定义

@@ -6,8 +6,10 @@
 @Description: 
 """
 import requests
+import uuid
 
-from const import AppID, AppSecret, ErrorCode, RedisKey
+from config import Config
+from const import AppID, AppSecret, ErrorCode, RedisKey, TestUser
 from utils.redis_helper import set_redis_data, get_redis_data_by_key
 
 
@@ -30,6 +32,10 @@ def get_access_token():
 
 
 def get_user_info_by_code(code):
+    if Config.SystemTest == "true":
+        return ErrorCode.Success, {"unionid": str(uuid.uuid4()), "openid": str(uuid.uuid4())}
+    elif code in TestUser.__members__:
+        return ErrorCode.Success, {"unionid": TestUser[code].value, "openid": TestUser[code].value}
     url = "https://api.weixin.qq.com/sns/jscode2session"
     data = {"appid": AppID, "secret": AppSecret, "js_code": code, "grant_type": "authorization_code"}
     response = requests.get(url=url, params=data)

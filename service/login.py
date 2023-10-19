@@ -15,7 +15,7 @@ class LoginService:
 
     @classmethod
     async def login(cls, code):
-        # 请求微信官方，
+        # 请求微信官方
         status, user_data = get_user_info_by_code(code)
         if status != ErrorCode.Success:
             return status, None
