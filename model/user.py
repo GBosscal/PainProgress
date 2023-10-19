@@ -122,6 +122,7 @@ class User(BaseModel):
             session.commit()
             return True
         except Exception:
+            print(traceback.format_exc())
             session.rollback()
             return False
 
@@ -137,6 +138,7 @@ class User(BaseModel):
             session.commit()
             return True
         except Exception:
+            print(traceback.format_exc())
             session.rollback()
             return False
 

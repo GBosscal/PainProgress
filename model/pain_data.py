@@ -6,6 +6,7 @@
 @Description:
     疼痛数据表的具体描述。
 """
+import traceback
 
 from sqlalchemy import String, Column, Integer, DateTime, Boolean, Enum, VARCHAR
 
@@ -19,7 +20,7 @@ session = create_db_session()
 class Pain(BaseModel):
     __tablename__ = "pain_data"
 
-    patient_id = Column(Integer, nullable=False)  # 患者ID
+    patient_id = Column(VARCHAR(36), nullable=False)  # 患者ID
     pain_level_custom = Column(Integer, nullable=False)  # 患者输入的疼痛等级
     pain_level = Column(Integer, nullable=True)  # 模型计算后得到的疼痛等级
     pain_data_path = Column(VARCHAR(128), nullable=False)  # 疼痛数据存储的位置
@@ -51,6 +52,7 @@ class Pain(BaseModel):
             session.commit()
             return True
         except Exception:
+            print(traceback.format_exc())
             session.rollback()
             return False
 
@@ -63,6 +65,7 @@ class Pain(BaseModel):
             session.commit()
             return True
         except Exception:
+            print(traceback.format_exc())
             session.rollback()
             return False
 
@@ -74,5 +77,6 @@ class Pain(BaseModel):
             session.commit()
             return True
         except Exception:
+            print(traceback.format_exc())
             session.rollback()
             return False

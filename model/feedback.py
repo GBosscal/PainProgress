@@ -19,8 +19,8 @@ session = create_db_session()
 class Feedback(BaseModel):
     __tablename__ = "feedback"
 
-    receiver = Column(Integer, nullable=False)  # 收件人
-    sender = Column(Integer, nullable=False)  # 发件人
+    receiver = Column(VARCHAR(36), nullable=False)  # 收件人
+    sender = Column(VARCHAR(36), nullable=False)  # 发件人
     msg = Column(Text, nullable=False)
 
     def __init__(self, receiver, sender, msg):
@@ -56,10 +56,11 @@ class Feedback(BaseModel):
         try:
             session.merge(msg_data)
             session.commit()
+            return True
         except Exception:
+            print(traceback.format_exc())
             session.rollback()
             return False
-        return True
 
     @classmethod
     def query_msg_by_receiver_and_sender(cls, receiver, sender):

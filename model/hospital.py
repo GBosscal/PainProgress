@@ -40,6 +40,7 @@ class Hospital(BaseModel):
             session.commit()
             return True
         except Exception:
+            print(traceback.format_exc())
             session.rollback()
             return False
 
@@ -51,6 +52,7 @@ class Hospital(BaseModel):
             session.commit()
             return True
         except Exception:
+            print(traceback.format_exc())
             session.rollback()
             return False
 
@@ -62,6 +64,7 @@ class Hospital(BaseModel):
             session.commit()
             return True
         except Exception:
+            print(traceback.format_exc())
             session.rollback()
             return False
 
