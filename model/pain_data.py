@@ -34,7 +34,9 @@ class Pain(BaseModel):
     def to_dict(self):
         return {
             "patient_id": self.patient_id, "pain_level_custom": self.pain_level_custom,
-            "pain_level": self.pain_level, "pain_data": self.pain_data_path
+            "pain_level": self.pain_level, "pain_data": self.pain_data_path,
+            "created_time": self.created_time.strftime("%Y-%m-%d %H:%M:%S"),
+            "updated_time": self.updated_time.strftime("%Y-%m-%d %H:%M:%S"),
         }
 
     @classmethod
@@ -43,7 +45,8 @@ class Pain(BaseModel):
 
     @classmethod
     def query_pain_data_by_patient_id(cls, patient_id):
-        return session.query(cls).filter_by(patient_id=patient_id, is_deleted=DeleteOrNot.NotDeleted.value).all()
+        return session.query(cls).filter_by(patient_id=patient_id, is_deleted=DeleteOrNot.NotDeleted.value).order_by(
+            cls.created_time).all()
 
     @classmethod
     def add_pain_data(cls, **kwargs):

@@ -152,3 +152,21 @@ class PainService:
         if not Pain.delete_pain_data(pain_data):
             return ErrorCode.PainDeleteError
         return ErrorCode.Success
+
+    @classmethod
+    async def get_pain_data_statistic_by_patient_id(cls, patient_id):
+        """
+        根据患者ID获取全部的疼痛数据
+        """
+        return_result = []
+        all_pain_data = Pain.query_pain_data_by_patient_id(patient_id)
+        for pain_data in all_pain_data:
+            pain_data = pain_data.to_dict()
+            # 暂时不返回图像内容
+            # absolute_path, convert_image_path = build_travel_storage_path(patient_id, pain_data["pain_data"])
+            # pain_data.update({
+            #     "convert_image": get_base64_for_image(convert_image_path),
+            #     "image": get_base64_for_image(absolute_path)
+            # })
+            return_result.append(pain_data)
+        return return_result

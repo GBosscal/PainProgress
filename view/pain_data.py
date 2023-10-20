@@ -149,5 +149,24 @@ class PainDataWithUploadDownloadView(HTTPMethodView):
         return response(service_code)
 
 
-pain_with_image_blueprint = Blueprint("pain", "/pain/image", version=1)
+class PainDataStatistics(HTTPMethodView):
+
+    @openapi.summary("获取全部的疼痛数据")
+    @openapi.description("获取特定患者全部的疼痛数据")
+    @openapi.parameter("patient_id", location="query")
+    @openapi.tag("疼痛数据统计")
+    async def get(self, request):
+        patient_id = request.args.get("patient_id")
+        if not patient_id:
+            return response(ErrorCode.ParamsMission)
+        return_data = await PainService.get_pain_data_statistic_by_patient_id(patient_id)
+        return response(ErrorCode.Success, return_data)
+
+
+pain_with_image_blueprint = Blueprint("pain_data", "/pain/image", version=1)
+# 上传文件和创建数据分开
 pain_with_image_blueprint.add_route(PainDataView.as_view(), "")
+# 上传文件和创建数据合并
+pain_with_image_blueprint.add_route(PainDataWithUploadDownloadView.as_view(), "/with_upload")
+# 统计患者的疼痛数据，按照创建时间，正序返回
+pain_with_image_blueprint.add_route(PainDataStatistics.as_view(), "/statistics")
