@@ -16,5 +16,5 @@ if __name__ == '__main__':
     application.run(
         host=Config.SysHost,
         port=Config.SysPort,
-        workers=Config.SysWorkerNum
+        workers=1
     )

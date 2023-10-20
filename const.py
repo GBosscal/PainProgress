@@ -15,6 +15,22 @@ AppID = "wx9acf3f3f48c20d8d"
 # APP Secret
 AppSecret = "93e62d1d3535a4abb8ebcd37b0dcc4f0"
 
+# 人脸模型权重
+detection_model_path = 'pain_model/weight/haarcascade_frontalface_default.xml'
+
+# 权重
+emotion_model_path = 'pain_model/weight/E135_0.6466.pth'
+
+_very = [0, 4]
+_not_fount = [1, 3, 5]
+_bit = [2, 6]
+
+emotion_labels = {
+    **{str(k): "非常疼痛" for k in _very},
+    **{str(k): "没有发现疼痛" for k in _not_fount},
+    **{str(k): "疼痛" for k in _bit}
+}
+
 
 class TestUser(EnumBase):
     """

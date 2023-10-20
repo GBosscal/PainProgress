@@ -22,13 +22,14 @@ class Pain(BaseModel):
 
     patient_id = Column(VARCHAR(36), nullable=False)  # 患者ID
     pain_level_custom = Column(Integer, nullable=False)  # 患者输入的疼痛等级
-    pain_level = Column(Integer, nullable=True)  # 模型计算后得到的疼痛等级
+    pain_level = Column(VARCHAR(32), nullable=True)  # 模型计算后得到的疼痛等级
     pain_data_path = Column(VARCHAR(128), nullable=False)  # 疼痛数据存储的位置
 
-    def __init__(self, patient_id, pain_level_custom, pain_data):
+    def __init__(self, patient_id, pain_level_custom, pain_data, pain_level=None):
         self.patient_id = patient_id
         self.pain_level_custom = pain_level_custom
         self.pain_data_path = pain_data
+        self.pain_level = pain_level
 
     def to_dict(self):
         return {
@@ -57,9 +58,10 @@ class Pain(BaseModel):
             return False
 
     @classmethod
-    def update_pain_data(cls, pain_level_custom, pain_data_path, pain_data):
+    def update_pain_data(cls, pain_level_custom, pain_data_path, pain_data, pain_level=None):
         pain_data.pain_level_custom = pain_level_custom
         pain_data.pain_data_path = pain_data_path
+        pain_data.pain_level = pain_level
         try:
             session.merge(pain_data)
             session.commit()
