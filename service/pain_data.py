@@ -72,7 +72,7 @@ class PainService:
             return ErrorCode.PainAddError, None
         # 返回画了框的图像的base64数据
         convert_image = get_base64_for_image(convert_image_path)
-        return ErrorCode.Success, convert_image
+        return ErrorCode.Success, {"covert_image": convert_image, "pain_level": pain_level}
 
     @classmethod
     async def add_pain_data_with_image(cls, patient_id, pain_level_custom, pain_data):
@@ -111,7 +111,7 @@ class PainService:
             return ErrorCode.PainUpdateError, None
         # 返回画了框的图像的base64数据
         convert_image = get_base64_for_image(convert_image_path)
-        return ErrorCode.Success, convert_image
+        return ErrorCode.Success, {"covert_image": convert_image, "pain_level": pain_level}
 
     @classmethod
     async def update_pain_data_with_image(cls, pain_id, pain_level_custom, pain_data):
