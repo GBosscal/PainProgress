@@ -85,10 +85,10 @@ class PainService:
         """
         # 先把流数据落盘
         storage_path = build_storage_path(patient_id, pain_data.name)
-        if not storage_data(pain_data, storage_path):
+        if not storage_data(pain_data.body, storage_path):
             return ErrorCode.UploadDataError, None
         # 创建一条患者的疼痛数据
-        return await cls.add_pain_data(patient_id, pain_level_custom, storage_path)
+        return await cls.add_pain_data(patient_id, pain_level_custom, pain_data.name)
 
     @classmethod
     async def update_pain_data(cls, pain_id, pain_level_custom, pain_data_path):
@@ -128,7 +128,7 @@ class PainService:
             return ErrorCode.PainDataNotExists
         # 数据落盘
         absolute_path, convert_image_path = build_travel_storage_path(pain_info.patient_id, pain_data.name)
-        if not storage_data(pain_data, absolute_path):
+        if not storage_data(pain_data.body, absolute_path):
             return ErrorCode.UploadDataError
         # 更新模型标注数据
         pain_level = convert_img(absolute_path, convert_image_path)

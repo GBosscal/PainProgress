@@ -7,6 +7,7 @@
 """
 import os
 import base64
+import traceback
 from uuid import uuid4
 
 from const import PainDataPath
@@ -51,6 +52,7 @@ def storage_data(file_data, file_path):
         with open(file_path, "wb") as f:
             f.write(file_data)
     except Exception:
+        print(traceback.format_exc())
         return False
     return True
 
@@ -60,5 +62,6 @@ def get_base64_for_image(file_path):
         with open(file_path, "rb") as f:
             encoded_string = base64.b64encode(f.read()).decode()
     except Exception:
+        print(traceback.format_exc())
         return ""
     return encoded_string

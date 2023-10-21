@@ -105,8 +105,8 @@ class PainDataWithUploadDownloadView(HTTPMethodView):
         data = await PainService.get_pain_data_with_image_by_patient_id(patient_id)
         return response(ErrorCode.Success, data)
 
-    @openapi.summary("获取疼痛数据")
-    @openapi.description("获取疼痛数据")
+    @openapi.summary("创建疼痛数据")
+    @openapi.description("创建疼痛数据")
     @openapi.definition(
         body={"application/form-data": ImagePainData}
     )
