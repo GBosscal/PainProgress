@@ -14,8 +14,6 @@ from model.base import BaseModel
 from utils.orm_mysql import create_db_session
 from const import DeleteOrNot
 
-session = create_db_session()
-
 
 class Hospital(BaseModel):
     __tablename__ = "hospital"
@@ -30,48 +28,54 @@ class Hospital(BaseModel):
 
     @classmethod
     def get_hospitals(cls):
-        return session.query(cls).filter_by(is_deleted=DeleteOrNot.NotDeleted.value).all()
+        with create_db_session() as session:
+            return session.query(cls).filter_by(is_deleted=DeleteOrNot.NotDeleted.value).all()
 
     @classmethod
     def add_hospital(cls, name):
         new_hospital = cls(name=name)
-        try:
-            session.add(new_hospital)
-            session.commit()
-            return True
-        except Exception:
-            print(traceback.format_exc())
-            session.rollback()
-            return False
+        with create_db_session() as session:
+            try:
+                session.add(new_hospital)
+                session.commit()
+                return True
+            except Exception:
+                print(traceback.format_exc())
+                session.rollback()
+                return False
 
     @classmethod
     def update_hospital(cls, name, data):
         data.name = name
-        try:
-            session.merge(data)
-            session.commit()
-            return True
-        except Exception:
-            print(traceback.format_exc())
-            session.rollback()
-            return False
+        with create_db_session() as session:
+            try:
+                session.merge(data)
+                session.commit()
+                return True
+            except Exception:
+                print(traceback.format_exc())
+                session.rollback()
+                return False
 
     @classmethod
     def delete_hospital(cls, data):
         data.is_deleted = DeleteOrNot.Deleted.value
-        try:
-            session.merge(data)
-            session.commit()
-            return True
-        except Exception:
-            print(traceback.format_exc())
-            session.rollback()
-            return False
+        with create_db_session() as session:
+            try:
+                session.merge(data)
+                session.commit()
+                return True
+            except Exception:
+                print(traceback.format_exc())
+                session.rollback()
+                return False
 
     @classmethod
     def query_hospital_by_id(cls, _id):
-        return session.query(cls).filter_by(id=_id).first()
+        with create_db_session() as session:
+            return session.query(cls).filter_by(id=_id).first()
 
     @classmethod
     def query_hospital_by_name(cls, name):
-        return session.query(cls).filter_by(name=name).all()
+        with create_db_session() as session:
+            return session.query(cls).filter_by(name=name).all()

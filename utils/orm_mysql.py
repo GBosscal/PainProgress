@@ -12,7 +12,7 @@ from config import Config
 
 
 def create_db_session():
-    engine = create_engine(Config.get_mysql_url(), echo=Config.MysqlEcho)
+    engine = create_engine(Config.get_mysql_url(), echo=Config.MysqlEcho, pool_pre_ping=True)
     session = sessionmaker(bind=engine)
     return session()
 

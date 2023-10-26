@@ -14,8 +14,6 @@ from model.base import BaseModel
 from const import UserType, DeleteOrNot
 from utils.orm_mysql import create_db_session
 
-session = create_db_session()
-
 
 class User(BaseModel):
     __tablename__ = "user"
@@ -77,7 +75,8 @@ class User(BaseModel):
         :param unionid:
         :return:
         """
-        return session.query(cls).filter_by(unionid=unionid, is_deleted=DeleteOrNot.NotDeleted.value).first()
+        with create_db_session() as session:
+            return session.query(cls).filter_by(unionid=unionid, is_deleted=DeleteOrNot.NotDeleted.value).first()
 
     @classmethod
     def query_user_by_id(cls, user_id):
@@ -86,7 +85,8 @@ class User(BaseModel):
         :param user_id:
         :return:
         """
-        return session.query(cls).filter_by(id=user_id, is_deleted=DeleteOrNot.NotDeleted.value).first()
+        with create_db_session() as session:
+            return session.query(cls).filter_by(id=user_id, is_deleted=DeleteOrNot.NotDeleted.value).first()
 
     @classmethod
     def add_user(cls, user_info):
@@ -95,52 +95,55 @@ class User(BaseModel):
         :param user_info:
         :return:
         """
-        try:
-            new_user = cls(**user_info)
-            session.add(new_user)
-            session.commit()
-            return True, new_user.id
-        except Exception:
-            print(traceback.format_exc())
-            session.rollback()
-            return False, None
+        with create_db_session() as session:
+            try:
+                new_user = cls(**user_info)
+                session.add(new_user)
+                session.commit()
+                return True, new_user.id
+            except Exception:
+                print(traceback.format_exc())
+                session.rollback()
+                return False, None
 
     @classmethod
     def update_user(cls, user_info, user_data=None):
-        if user_data is None:
-            user_data = session.query(cls).filter_by(id=user_info["id"],
-                                                     is_deleted=DeleteOrNot.NotDeleted.value).first()
-        if not user_data:
-            return False
-        user_data.user_name = user_info["user_name"]
-        user_data.user_type = user_info["user_type"]
-        user_data.doctor_id = user_info["doctor_id"]
-        user_data.hospital_id = user_info["hospital_id"]
-        user_data.age = user_info["age"]
-        try:
-            session.merge(user_data)
-            session.commit()
-            return True
-        except Exception:
-            print(traceback.format_exc())
-            session.rollback()
-            return False
+        with create_db_session() as session:
+            if user_data is None:
+                user_data = session.query(cls).filter_by(
+                    id=user_info["id"], is_deleted=DeleteOrNot.NotDeleted.value).first()
+            if not user_data:
+                return False
+            user_data.user_name = user_info["user_name"]
+            user_data.user_type = user_info["user_type"]
+            user_data.doctor_id = user_info["doctor_id"]
+            user_data.hospital_id = user_info["hospital_id"]
+            user_data.age = user_info["age"]
+            try:
+                session.merge(user_data)
+                session.commit()
+                return True
+            except Exception:
+                print(traceback.format_exc())
+                session.rollback()
+                return False
 
     @classmethod
     def delete_user(cls, user_id, user_data=None):
-        if user_data is None:
-            user_data = session.query(cls).filte_by(id=user_id, is_deleted=DeleteOrNot.NotDeleted.value).first()
-        if not user_data:
-            return False
-        user_data.is_deleted = DeleteOrNot.Deleted.value
-        try:
-            session.merge(user_data)
-            session.commit()
-            return True
-        except Exception:
-            print(traceback.format_exc())
-            session.rollback()
-            return False
+        with create_db_session() as session:
+            if user_data is None:
+                user_data = session.query(cls).filte_by(id=user_id, is_deleted=DeleteOrNot.NotDeleted.value).first()
+            if not user_data:
+                return False
+            user_data.is_deleted = DeleteOrNot.Deleted.value
+            try:
+                session.merge(user_data)
+                session.commit()
+                return True
+            except Exception:
+                print(traceback.format_exc())
+                session.rollback()
+                return False
 
     @classmethod
     def query_user_by_doctor_id(cls, doctor_id):
@@ -149,16 +152,20 @@ class User(BaseModel):
         :param doctor_id: 医生的ID
         :return:
         """
-        return session.query(cls).filter_by(doctor_id=doctor_id, is_deleted=DeleteOrNot.NotDeleted.value).all()
+        with create_db_session() as session:
+            return session.query(cls).filter_by(doctor_id=doctor_id, is_deleted=DeleteOrNot.NotDeleted.value).all()
 
     @classmethod
     def query_user_by_hospital_id(cls, hospital_id, user_type=None):
         """
         通过医院的ID查询用户信息
         """
-        if not user_type:
-            return session.query(cls).filter_by(hospital_id=hospital_id, is_deleted=DeleteOrNot.NotDeleted.value).all()
-        else:
-            return session.query(cls).filter_by(
-                hospital_id=hospital_id, user_type=user_type, is_deleted=DeleteOrNot.NotDeleted.value
-            ).all()
+        with create_db_session() as session:
+            if not user_type:
+                return session.query(cls).filter_by(
+                    hospital_id=hospital_id, is_deleted=DeleteOrNot.NotDeleted.value
+                ).all()
+            else:
+                return session.query(cls).filter_by(
+                    hospital_id=hospital_id, user_type=user_type, is_deleted=DeleteOrNot.NotDeleted.value
+                ).all()
