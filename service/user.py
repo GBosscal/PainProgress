@@ -5,11 +5,53 @@ from utils.wechat_scripts import get_user_info_by_code
 from config import Config
 from uuid import uuid4
 
+import random
+
 
 class UserService:
 
     @classmethod
-    async def add_user(cls, user_info):
+    async def _add_user(cls, user_info):
+        """
+        (内部方法)将用户新增到数据库中
+        :param user_info:
+        """
+        # 检验数据是否缺失
+        if not User.user_info_checker(user_info):
+            return ErrorCode.UserInfoError, None
+        # 校验用户（同一个微信ID）是否存在
+        if User.query_user_by_unionid(user_info["unionid"]) is not None:
+            return ErrorCode.UserAlreadyExists, None
+        # 校验用户是否重名，如果重名的话则在后面增加序号
+        name_index = User.query_name_by_user_name(user_info["user_name"])
+        if name_index is not None:
+            user_info["user_name"] = f"{user_info['user_name']} - {str(name_index + 1)}"
+        # 新增用户
+        status, user_id = User.add_user(user_info)
+        if not status:
+            return ErrorCode.UserAddError, None
+        user_info.update({"id": user_id})
+        user_info.pop("unionid", None)
+        return ErrorCode.Success, user_info
+
+    @classmethod
+    async def add_user_by_range_id(cls, user_info):
+        """
+        新增用户
+        :param user_info: 用户信息
+        """
+        # 随机生成一个6位的id，并确保没有重复
+        while True:
+            random_int = random.randint(10000, 99999)
+            # 查询是否有重复的, 如果重复的话重新生成一个
+            if User.query_user_by_unionid(random_int) is not None:
+                continue
+            else:
+                user_info["unionid"] = random_int
+        return cls._add_user(user_info)
+
+    @classmethod
+    async def add_user_by_code(cls, user_info):
         """
         新增用户
         :param user_info:
@@ -21,22 +63,10 @@ class UserService:
         else:
             status, user_data = get_user_info_by_code(user_info["code"])
             if status != ErrorCode.Success:
-                return status,None
+                return status, None
             # 暂时使用openid，充当unionid
             user_info["unionid"] = user_data["openid"]
-        # 检验数据是否缺失
-        if not User.user_info_checker(user_info):
-            return ErrorCode.UserInfoError, None
-        # 校验用户（同一个微信ID）是否存在
-        if User.query_user_by_unionid(user_info["unionid"]) is not None:
-            return ErrorCode.UserAlreadyExists, None
-        # 新增用户
-        status, user_id = User.add_user(user_info)
-        if not status:
-            return ErrorCode.UserAddError, None
-        user_info.update({"id": user_id})
-        user_info.pop("unionid", None)
-        return ErrorCode.Success, user_info
+        return cls._add_user(user_info)
 
     @classmethod
     async def update_user(cls, user_info):

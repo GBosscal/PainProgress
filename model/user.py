@@ -169,3 +169,20 @@ class User(BaseModel):
                 return session.query(cls).filter_by(
                     hospital_id=hospital_id, user_type=user_type, is_deleted=DeleteOrNot.NotDeleted.value
                 ).all()
+
+    @classmethod
+    def query_name_by_user_name(cls, name):
+        """
+        通过名称查询是否有重名的，如果有重名的返回最大的index, 没有则会返回None
+        """
+        index = 0
+        with create_db_session() as session:
+            users = session.query(cls).filter_by(name=name).all()
+            if users:
+                for user_info in users:
+                    name = user_info.name.split("-")
+                    if int(name[-1]) > index:
+                        index = int(name[-1])
+                return index
+            else:
+                return None
