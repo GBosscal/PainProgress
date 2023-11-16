@@ -62,16 +62,20 @@ class PainService:
         :param pain_data_path: 疼痛数据的路经
         :return:
         """
-        # 先跑一下模型，同步完成数据标注
         absolute_path, convert_image_path = build_travel_storage_path(patient_id, pain_data_path)
-        pain_level = convert_img(absolute_path, convert_image_path)
+        # 判断是否为一个图片，如果不是的话则不传入到模型中
+        if absolute_path.endswith((".jpg", ".jpeg", ".png")):
+            # 先跑一下模型，同步完成数据标注
+            pain_level = convert_img(absolute_path, convert_image_path)
+            # 返回画了框的图像的base64数据
+            convert_image = get_base64_for_image(convert_image_path)
+        else:
+            pain_level, convert_image = None, ""
         if not Pain.add_pain_data(
                 patient_id=patient_id, pain_level_custom=pain_level_custom,
                 pain_data=pain_data_path, pain_level=pain_level
         ):
             return ErrorCode.PainAddError, None
-        # 返回画了框的图像的base64数据
-        convert_image = get_base64_for_image(convert_image_path)
         return ErrorCode.Success, {"covert_image": convert_image, "pain_level": pain_level}
 
     @classmethod
