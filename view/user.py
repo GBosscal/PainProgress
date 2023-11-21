@@ -15,6 +15,13 @@ class CreateUser:
     doctor_id: str
     age: int
 
+class CreateUserWithoutCode:
+    user_name: str
+    hospital_id: str
+    user_type: str
+    doctor_id: str
+    age: int
+
 
 class UpdateUser:
     user_name: str
@@ -108,10 +115,23 @@ class DoctorView(HTTPMethodView):
         return response(ErrorCode.Success, result)
 
 
+class UserViewWithoutCode(HTTPMethodView):
+
+    @openapi.summary("创建用户")
+    @openapi.description("创建用户")
+    @openapi.definition(body={"application/json": CreateUserWithoutCode})
+    @openapi.tag("user")
+    async def post(self, request):
+        request_body = request.json
+        service_code, user_info = await UserService.add_user_by_range_id(request_body)
+        return response(service_code, user_info)
+
+
 user_blueprint = Blueprint("user", "/user", version=1)
 user_blueprint.add_route(UserView.as_view(), "")
 user_blueprint.add_route(PatientView.as_view(), uri="/patient")
 user_blueprint.add_route(DoctorView.as_view(), uri="/doctor")
+user_blueprint.add_route(UserViewWithoutCode.as_view(), uri="/patient/without-code")
 
 # patient_blueprint = Blueprint("patient", "/user", version=1)
 # patient_blueprint.add_route(PatientView.as_view(), uri="/patient")
