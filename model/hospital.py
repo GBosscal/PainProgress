@@ -78,4 +78,15 @@ class Hospital(BaseModel):
     @classmethod
     def query_hospital_by_name(cls, name):
         with create_db_session() as session:
-            return session.query(cls).filter_by(name=name).all()
+            return session.query(cls).filter_by(name=name).first()
+
+    @classmethod
+    def query_huaqiao_hospital(cls, name="华侨医院"):
+        data = cls.query_hospital_by_name(name)
+        if not data:
+            cls.add_hospital(name)
+            data = cls.query_hospital_by_name(name)
+        if not data:
+            return None, None
+        return data.id, data.name
+

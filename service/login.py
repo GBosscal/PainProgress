@@ -11,6 +11,7 @@ from model.user import User
 from const import ErrorCode
 from utils.secret import check_password, hash_string_with_timestamp
 from utils.redis_helper import set_redis_data
+from model.hospital import Hospital
 
 
 class LoginService:
@@ -42,6 +43,10 @@ class LoginService:
         user_info = user_info.to_dict()
         user_info = await UserService.update_user_info(user_info)
         user_info["token"] = token
+        # 再返回一个华侨医院的ID回去
+        hp_id, hp_name = Hospital.query_huaqiao_hospital()
+        user_info["huaqiao_id"] = hp_id
+        user_info["huaqiao_name"] = hp_name
         return ErrorCode.Success, user_info
 
     @classmethod
@@ -62,4 +67,8 @@ class LoginService:
         user_info = user_info.to_dict()
         user_info = await UserService.update_user_info(user_info)
         user_info["token"] = token
+        # 再返回一个华侨医院的ID回去
+        hp_id, hp_name = Hospital.query_huaqiao_hospital()
+        user_info["huaqiao_id"] = hp_id
+        user_info["huaqiao_name"] = hp_name
         return ErrorCode.Success, user_info

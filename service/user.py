@@ -17,6 +17,8 @@ class UserService:
         (内部方法)将用户新增到数据库中
         :param user_info:
         """
+        # 查询名称为华侨医院的id
+
         # 检验数据是否缺失
         if not User.user_info_checker(user_info):
             return ErrorCode.UserInfoError, None
@@ -46,7 +48,6 @@ class UserService:
         从PreUserID开始，每一个新增的用户增加1
         """
         max_id = User.query_max_service_unionid()
-
         service_unionid = max_id + 1
         unionid = service_unionid + PreUserID
         user_info["unionid"] = unionid
