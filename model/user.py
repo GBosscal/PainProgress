@@ -209,6 +209,6 @@ class User(BaseModel):
         """
         with create_db_session() as session:
             max_query = session.query(cls).order_by(cls.service_unionid.desc()).first()
-            if not max_query:
+            if not max_query or not max_query.service_unionid:
                 return 0
             return max_query.service_unionid

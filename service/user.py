@@ -46,6 +46,7 @@ class UserService:
         从PreUserID开始，每一个新增的用户增加1
         """
         max_id = User.query_max_service_unionid()
+
         service_unionid = max_id + 1
         unionid = service_unionid + PreUserID
         user_info["unionid"] = unionid
