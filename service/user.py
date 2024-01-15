@@ -18,7 +18,8 @@ class UserService:
         :param user_info:
         """
         # 查询名称为华侨医院的id
-
+        hp_id, _ = Hospital.query_huaqiao_hospital()
+        user_info["hospital_id"] = hp_id
         # 检验数据是否缺失
         if not User.user_info_checker(user_info):
             return ErrorCode.UserInfoError, None
