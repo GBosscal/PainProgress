@@ -1,5 +1,5 @@
-sanic~=23.6.0
-sanic_ext
+sanic==23.6.0
+sanic_ext==23.6.0
 SQLAlchemy~=2.0.20
 requests
 pymysql

@@ -31,7 +31,7 @@ def create_app():
     # 修改apidoc的定义
     app.ext.openapi.describe(
         "疼痛分析系统的后端服务",
-        version="0.0.2",
+        version="1.0.0",
         description=(
             """
             # 疼痛分析系统

@@ -17,3 +17,4 @@ img = cv2.cvtColor(cv_img, cv2.COLOR_BGR2GRAY)
 result = pain_convert(img, cv_img)
 cv2.imwrite(new_image_path, result)
 print(result)
+

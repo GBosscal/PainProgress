@@ -8,7 +8,7 @@
 """
 import traceback
 
-from sqlalchemy import String, Column, Integer, DateTime, Boolean, Enum, VARCHAR
+from sqlalchemy import String, Column, Integer, DateTime, Boolean, Enum, VARCHAR, func
 
 from model.base import BaseModel
 from const import UserType, DeleteOrNot
@@ -24,14 +24,23 @@ class User(BaseModel):
     user_type = Column(Enum(UserType), nullable=False)  # 用户类型
     age = Column(Integer, nullable=True)  # 年龄
     unionid = Column(VARCHAR(64), nullable=False)  # 微信ID（注册后应该能获取）
+    service_unionid = Column(Integer, nullable=True)  # 计算自增ID，用于后续赋值给unionid
+    password = Column(VARCHAR(128), nullable=True)  # 密码
 
-    def __init__(self, user_name, hospital_id, user_type, unionid, doctor_id=None, age=None, **kwargs):
+    def __init__(
+            self, user_name, hospital_id, user_type,
+            unionid, doctor_id=None, age=None,
+            service_unionid=None, password=None,
+            **kwargs
+    ):
         self.user_name = user_name
         self.hospital_id = hospital_id
         self.user_type = user_type
         self.unionid = unionid
         self.doctor_id = doctor_id
         self.age = age
+        self.service_unionid = service_unionid
+        self.password = password
 
     def to_dict(self):
         return {
@@ -175,14 +184,31 @@ class User(BaseModel):
         """
         通过名称查询是否有重名的，如果有重名的返回最大的index, 没有则会返回None
         """
-        index = 0
+        index = None
         with create_db_session() as session:
-            users = session.query(cls).filter_by(name=name).all()
-            if users:
-                for user_info in users:
-                    name = user_info.name.split("-")
-                    if int(name[-1]) > index:
-                        index = int(name[-1])
-                return index
-            else:
-                return None
+            # 使用参数化查询
+            users = session.query(User).filter(User.user_name.like(func.concat('%', name, '%'))).all()
+            for user in users:
+                search_index = user.user_name.split("-")[-1]
+                try:
+                    search_index = int(search_index)
+                except Exception:
+                    pass
+                if user.user_name.startswith(name):
+                    # 如果有重名的，才将index设置为0
+                    index = 0 if index is None else index
+                    if isinstance(search_index, int) and search_index > index:
+                        index = search_index
+            print(index)
+            return index
+
+    @classmethod
+    def query_max_service_unionid(cls):
+        """
+        查询最大的系统自增id
+        """
+        with create_db_session() as session:
+            max_query = session.query(cls).order_by(cls.service_unionid.desc()).first()
+            if not max_query:
+                return 0
+            return max_query.service_unionid

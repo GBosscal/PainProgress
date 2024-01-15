@@ -15,12 +15,22 @@ class CreateUser:
     doctor_id: str
     age: int
 
+
 class CreateUserWithoutCode:
     user_name: str
     hospital_id: str
     user_type: str
     doctor_id: str
     age: int
+
+
+class CreateUserWithPassword:
+    user_name: str
+    hospital_id: str
+    user_type: str
+    doctor_id: str
+    age: int
+    password: str
 
 
 class UpdateUser:
@@ -117,8 +127,8 @@ class DoctorView(HTTPMethodView):
 
 class UserViewWithoutCode(HTTPMethodView):
 
-    @openapi.summary("创建用户")
-    @openapi.description("创建用户")
+    @openapi.summary("创建用户-没有code")
+    @openapi.description("创建用户-没有code")
     @openapi.definition(body={"application/json": CreateUserWithoutCode})
     @openapi.tag("user")
     async def post(self, request):
@@ -127,14 +137,21 @@ class UserViewWithoutCode(HTTPMethodView):
         return response(service_code, user_info)
 
 
+class UserRegistryWithPasswordView(HTTPMethodView):
+
+    @openapi.summary("创建用户-账号密码")
+    @openapi.description("创建用户-账号密码")
+    @openapi.definition(body={"application/json": CreateUserWithPassword})
+    @openapi.tag("user")
+    async def post(self, request):
+        request_body = request.json
+        service_code, user_info = await UserService.add_user_by_service_unionid(request_body)
+        return response(service_code, user_info)
+
+
 user_blueprint = Blueprint("user", "/user", version=1)
 user_blueprint.add_route(UserView.as_view(), "")
 user_blueprint.add_route(PatientView.as_view(), uri="/patient")
 user_blueprint.add_route(DoctorView.as_view(), uri="/doctor")
 user_blueprint.add_route(UserViewWithoutCode.as_view(), uri="/patient/without-code")
-
-# patient_blueprint = Blueprint("patient", "/user", version=1)
-# patient_blueprint.add_route(PatientView.as_view(), uri="/patient")
-#
-# doctor_blueprint =  Blueprint("doctor", "/doctor", version=1)
-# doctor_blueprint.add_route(DoctorView.as_view(), uri="")
+user_blueprint.add_route(UserRegistryWithPasswordView.as_view(), uri="/registry")

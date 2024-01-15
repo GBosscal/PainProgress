@@ -5,7 +5,10 @@
 @Date: 2023/10/7
 @Description: 
 """
+import bcrypt
 import base64
+import hashlib
+import time
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad, unpad
 
@@ -44,3 +47,29 @@ def verif_token(token):
 
 def create_token(user_id):
     pass
+
+
+# 存储密码
+def hash_password(password):
+    salt = bcrypt.gensalt()
+    hashed_password = bcrypt.hashpw(password.encode('utf-8'), salt)
+    return hashed_password
+
+
+# 验证密码
+def check_password(plain_password, hashed_password_str):
+    hashed_password = hashed_password_str.encode('utf-8')
+    return bcrypt.checkpw(plain_password.encode('utf-8'), hashed_password)
+
+
+def hash_string_with_timestamp(input_string):
+    # 获取当前时间戳
+    timestamp = str(time.time())
+
+    # 将字符串和时间戳组合
+    combined_string = input_string + timestamp
+
+    # 使用 SHA-256 哈希算法进行哈希
+    hashed_value = hashlib.sha256(combined_string.encode('utf-8')).hexdigest()
+
+    return hashed_value

@@ -1,11 +1,12 @@
 from model.user import User
 from model.hospital import Hospital
-from const import ErrorCode, UserType
+from const import ErrorCode, UserType, PreUserID
 from utils.wechat_scripts import get_user_info_by_code
 from config import Config
-from uuid import uuid4
+from utils.secret import hash_password
 
 import random
+from uuid import uuid4
 
 
 class UserService:
@@ -26,18 +27,39 @@ class UserService:
         name_index = User.query_name_by_user_name(user_info["user_name"])
         if name_index is not None:
             user_info["user_name"] = f"{user_info['user_name']} - {str(name_index + 1)}"
+        # 密码加密存储
+        if user_info["password"]:
+            user_info["password"] = hash_password(user_info["password"])
         # 新增用户
         status, user_id = User.add_user(user_info)
         if not status:
             return ErrorCode.UserAddError, None
         user_info.update({"id": user_id})
-        user_info.pop("unionid", None)
+        if not user_info.get("service_unionid"):
+            user_info.pop("unionid", None)
         return ErrorCode.Success, user_info
+
+    @classmethod
+    async def add_user_by_service_unionid(cls, user_info):
+        """
+        通过service_unionid去新增用户
+        从PreUserID开始，每一个新增的用户增加1
+        """
+        max_id = User.query_max_service_unionid()
+        service_unionid = max_id + 1
+        unionid = service_unionid + PreUserID
+        user_info["unionid"] = unionid
+        user_info["service_unionid"] = service_unionid
+        status, data = await cls._add_user(user_info)
+        if status != ErrorCode.Success:
+            return status, data
+        else:
+            return status, data["unionid"]
 
     @classmethod
     async def add_user_by_range_id(cls, user_info):
         """
-        新增用户
+        随机生成unionid并新增用户
         :param user_info: 用户信息
         """
         # 随机生成一个6位的id，并确保没有重复
@@ -53,7 +75,7 @@ class UserService:
     @classmethod
     async def add_user_by_code(cls, user_info):
         """
-        新增用户
+        通过unionid新增用户
         :param user_info:
         :return:
         """

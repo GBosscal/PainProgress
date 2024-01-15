@@ -31,6 +31,9 @@ emotion_labels = {
     **{str(k): "疼痛" for k in _bit}
 }
 
+# 用户id起始数，修改的时候要看数据库数据分布情况，否则用户会重复
+PreUserID = 10000
+
 
 class TestUser(EnumBase):
     """
@@ -73,6 +76,7 @@ class ErrorCode(EnumBase):
     UserIDMissing = "10000105"
     UserDeleteError = "10000106"
     UserNotRegistry = "10000107"
+    UserPasswordError = "10000108"
 
     # 医院异常
     HospitalExists = "100000201"
@@ -117,6 +121,7 @@ class ErrorMsg(EnumBase):
     UserIDMissing = "用户ID缺失"
     UserDeleteError = "用户删除异常"
     UserNotRegistry = "用户还没注册"
+    UserPasswordError = "密码错误"
 
     # 医院异常
     HospitalExists = "医院已经存在"
