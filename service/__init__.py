@@ -22,18 +22,17 @@ def create_app():
 
     all_blueprint = Blueprint.group(
         user_blueprint, feedback_blueprint,
-        storage_blueprint, pain_blueprint, hospital_blueprint,
-        login_blueprint, pain_with_image_blueprint,
+        storage_blueprint, login_blueprint, hospital_blueprint,
         url_prefix="/pain"
     )
     app.blueprint(all_blueprint)
     # app.blueprint(user_blueprint)
     # app.blueprint(feedback_blueprint)
     # app.blueprint(storage_blueprint)
-    # app.blueprint(pain_blueprint)
+    app.blueprint(pain_blueprint)
     # app.blueprint(hospital_blueprint)
     # app.blueprint(login_blueprint)
-    # app.blueprint(pain_with_image_blueprint)
+    app.blueprint(pain_with_image_blueprint)
 
     # 修改apidoc的定义
     app.ext.openapi.describe(
