@@ -11,6 +11,8 @@ def create_app():
     app = Sanic("backend-for-pain-system")
     # 应用的健康检查配置
     app.config.HEALTH = True
+    # 修改docs的配置
+    app.config.OAS_URL_PREFIX = "/v1/pain/docs"
     # 注册路由
     from view.user import user_blueprint
     from view.feedback import feedback_blueprint
