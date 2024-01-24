@@ -119,8 +119,8 @@ class DoctorView(HTTPMethodView):
     @openapi.parameter("hospital_id", location="query")
     async def get(self, request):
         hospital_id = request.args.get("hospital_id")
-        if not hospital_id:
-            return response(ErrorCode.HospitalIDMissing)
+        # if not hospital_id:
+        #     return response(ErrorCode.HospitalIDMissing)
         result = await UserService.get_user_info_by_hospital_id(hospital_id)
         return response(ErrorCode.Success, result)
 

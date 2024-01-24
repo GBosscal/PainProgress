@@ -177,6 +177,8 @@ class UserService:
         """
         通过医院ID查询医生
         """
+        if not hospital_id:
+            hospital_id, _ = Hospital.query_huaqiao_hospital()
         all_user_info = []
         user_data = User.query_user_by_hospital_id(hospital_id, user_type=UserType.DOCTOR)
         for user in user_data:
