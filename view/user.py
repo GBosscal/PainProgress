@@ -40,10 +40,17 @@ class UpdateUser:
     doctor_id: str
     age: int
     id: str
+    password: str
 
 
 class DeleteUser:
     user_id: str
+
+
+class ResetUserPassword:
+    secret: str
+    user_id: str
+    doctor_id: str
 
 
 class UserView(HTTPMethodView):
@@ -111,6 +118,20 @@ class PatientView(HTTPMethodView):
         return response(ErrorCode.Success, result)
 
 
+class PatientTotalView(HTTPMethodView):
+
+    @openapi.summary("获取特定医生下的患者总数")
+    @openapi.description("通过医生的ID获取特定医生下的患者总数")
+    @openapi.tag("user")
+    @openapi.parameter("doctor_id", location="query")
+    async def get(self, request):
+        doctor_id = request.args.get("doctor_id")
+        if not doctor_id:
+            return response(ErrorCode.UserIDMissing)
+        total = await UserService.get_user_total_by_doctor_id(doctor_id)
+        return response(ErrorCode.Success, {"total": total, "doctor_id": doctor_id})
+
+
 class DoctorView(HTTPMethodView):
 
     @openapi.summary("获取特定医院下的医生")
@@ -122,6 +143,15 @@ class DoctorView(HTTPMethodView):
         # if not hospital_id:
         #     return response(ErrorCode.HospitalIDMissing)
         result = await UserService.get_user_info_by_hospital_id(hospital_id)
+        return response(ErrorCode.Success, result)
+
+    @openapi.summary("重置密码")
+    @openapi.description("医生能直接重置名下患者的密码，或者加入密钥，重置任意用户的密码")
+    @openapi.tag("user")
+    @openapi.definition(body={"application/json": ResetUserPassword})
+    async def put(self, request):
+        data = request.json
+        result = await UserService.update_user_password(**data)
         return response(ErrorCode.Success, result)
 
 
@@ -152,6 +182,7 @@ class UserRegistryWithPasswordView(HTTPMethodView):
 user_blueprint = Blueprint("user", "/user", version=1)
 user_blueprint.add_route(UserView.as_view(), "")
 user_blueprint.add_route(PatientView.as_view(), uri="/patient")
+user_blueprint.add_route(PatientTotalView.as_view(), uri="/patient/total")
 user_blueprint.add_route(DoctorView.as_view(), uri="/doctor")
 user_blueprint.add_route(UserViewWithoutCode.as_view(), uri="/patient/without-code")
 user_blueprint.add_route(UserRegistryWithPasswordView.as_view(), uri="/registry")

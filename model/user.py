@@ -128,6 +128,21 @@ class User(BaseModel):
             user_data.doctor_id = user_info["doctor_id"]
             user_data.hospital_id = user_info["hospital_id"]
             user_data.age = user_info["age"]
+            if user_info.get("password"):
+                user_data.password = user_info["password"]
+            try:
+                session.merge(user_data)
+                session.commit()
+                return True
+            except Exception:
+                print(traceback.format_exc())
+                session.rollback()
+                return False
+
+    @classmethod
+    def update_user_password(cls, user_data, user_password):
+        with create_db_session() as session:
+            user_data.password = user_password
             try:
                 session.merge(user_data)
                 session.commit()

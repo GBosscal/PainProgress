@@ -1,6 +1,6 @@
 from model.user import User
 from model.hospital import Hospital
-from const import ErrorCode, UserType, PreUserID
+from const import ErrorCode, UserType, PreUserID, ResetPasswordSecret, AfterResetPassword
 from utils.wechat_scripts import get_user_info_by_code
 from config import Config
 from utils.secret import hash_password
@@ -107,6 +107,9 @@ class UserService:
         user_data = User.query_user_by_id(user_info["id"])
         if user_data is None:
             return ErrorCode.UserNotExists
+        # 校验是否要更新密码
+        if user_info.get("password"):
+            user_info["password"] = hash_password(user_info["password"])
         # 更新用户
         if not User.update_user(user_info, user_data):
             return ErrorCode.UserUpdateError
@@ -173,6 +176,18 @@ class UserService:
         return users
 
     @classmethod
+    async def get_user_total_by_doctor_id(cls, doctor_id):
+        """
+        通过医生ID获取用户总数
+        :param doctor_id:
+        :return
+        """
+        user_data = User.query_user_by_doctor_id(doctor_id)
+        if not user_data:
+            return 0
+        return len(user_data)
+
+    @classmethod
     async def get_user_info_by_hospital_id(cls, hospital_id):
         """
         通过医院ID查询医生
@@ -185,3 +200,33 @@ class UserService:
             user_info = await cls.update_user_info(user.to_dict())
             all_user_info.append(user_info)
         return all_user_info
+
+    @classmethod
+    async def _update_user_password(cls, user_id):
+        """
+        查询用户信息并重置用户密码
+        """
+        user_data = User.query_user_by_id(user_id)
+        if not user_data:
+            return ErrorCode.UserNotExists
+        password = hash_password(AfterResetPassword)
+        if not User.update_user_password(user_data, password):
+            return ErrorCode.UserPasswordResetFailed
+        else:
+            return ErrorCode.Success
+
+    @classmethod
+    async def update_user_password(cls, secret, doctor_id, user_id, **kwargs):
+        """
+        重置密码：
+        1. doctor_id + user_id 重置医生下患者的密码
+        2. secret + user_id 重置任意用户密码
+        其他条件均返回密码重置条件异常
+        """
+        if secret and user_id and secret == ResetPasswordSecret:
+            return await cls._update_user_password(user_id)
+        if doctor_id and user_id:
+            user_data = User.query_user_by_id(user_id)
+            if doctor_id == user_data.doctor_id:
+                return await cls._update_user_password(user_id)
+        return ErrorCode.UserResetPasswordError

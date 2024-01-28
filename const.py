@@ -34,6 +34,12 @@ emotion_labels = {
 # 用户id起始数，修改的时候要看数据库数据分布情况，否则用户会重复
 PreUserID = 10000
 
+# 重置密码密钥
+ResetPasswordSecret = "ResetPainServicePassword!@#$"
+
+# 重置后的密码
+AfterResetPassword = "abc123@"
+
 
 class TestUser(EnumBase):
     """
@@ -77,6 +83,8 @@ class ErrorCode(EnumBase):
     UserDeleteError = "10000106"
     UserNotRegistry = "10000107"
     UserPasswordError = "10000108"
+    UserResetPasswordError = "10000109"
+    UserPasswordResetFailed = "10000110"
 
     # 医院异常
     HospitalExists = "100000201"
@@ -122,6 +130,8 @@ class ErrorMsg(EnumBase):
     UserDeleteError = "用户删除异常"
     UserNotRegistry = "用户还没注册"
     UserPasswordError = "密码错误"
+    UserResetPasswordError = "密码重置条件异常"
+    UserPasswordResetFailed = "密码重置失败"
 
     # 医院异常
     HospitalExists = "医院已经存在"
