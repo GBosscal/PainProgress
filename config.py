@@ -16,8 +16,8 @@ import os
 class MysqlConfig:
     MysqlHost = os.environ.get("mysql_host", "127.0.0.1")
     MysqlPort = int(os.environ.get("mysql_port", "3306"))
-    MysqlUserName = os.environ.get("mysql_name", "admin")
-    MysqlPSWD = os.environ.get("mysql_pswd", "admin")
+    MysqlUserName = os.environ.get("mysql_name", "root")
+    MysqlPSWD = os.environ.get("mysql_pswd", "root")
     MysqlDataBase = os.environ.get("mysql_db", "pain")
     MysqlEcho = False if os.environ.get("mysql_echo") != "true" else True
 

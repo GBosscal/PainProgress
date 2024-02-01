@@ -26,6 +26,7 @@ class User(BaseModel):
     unionid = Column(VARCHAR(64), nullable=False)  # 微信ID（注册后应该能获取）
     service_unionid = Column(Integer, nullable=True)  # 计算自增ID，用于后续赋值给unionid
     password = Column(VARCHAR(128), nullable=True)  # 密码
+    login_code = Column(VARCHAR(64), nullable=True)  # 登陆的时候使用的open_id
 
     def __init__(
             self, user_name, hospital_id, user_type,
@@ -227,3 +228,28 @@ class User(BaseModel):
             if not max_query or not max_query.service_unionid:
                 return 0
             return max_query.service_unionid
+
+    @classmethod
+    def update_user_login_openid(cls, user_info, code):
+        """
+        更新用户登陆使用的open——id
+        """
+        with create_db_session() as session:
+            user_info.login_code = code
+            try:
+                session.merge(user_info)
+                session.commit()
+                return True
+            except Exception:
+                print(traceback.format_exc())
+                session.rollback()
+                return False
+
+    @classmethod
+    def query_user_by_code(cls, code):
+        """
+        通过code获取用户信息
+        """
+        with create_db_session() as session:
+            users = session.query(cls).filter_by(login_code=code).all()
+            return [{"unionid": user.unionid, **user.to_dict()} for user in users or []]
