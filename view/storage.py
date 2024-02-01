@@ -16,8 +16,8 @@ from sanic.response import file
 from view import response
 from service.pain_data import PainService
 from const import ErrorCode
-from utils.storage import build_storage_path
-from utils.storage import storage_data
+from utils import get_mime_type_and_name
+from utils.storage import build_storage_path, storage_data
 
 
 class CreatePainData:
@@ -57,5 +57,23 @@ class StorageView(HTTPMethodView):
         return await file(data_path, mime_type="image/jpeg", filename=file_name)
 
 
+class GetStorageView(HTTPMethodView):
+
+    @openapi.summary("根据路径获取数据")
+    @openapi.description("根据路径获取数据")
+    @openapi.parameter("record_path", location="query")
+    @openapi.tag("数据存储")
+    async def get(self, request):
+        record_path = request.args.get("record_path")
+        if not record_path.startswith("pain_data/patient"):
+            return response(ErrorCode.FilePathError)
+        file_data = await PainService.get_file(record_path)
+        if isinstance(file_data, ErrorCode):
+            return response(file_data)
+        mime_type, file_name = get_mime_type_and_name(record_path)
+        return await file(record_path, mime_type=mime_type, filename=file_name)
+
+
 storage_blueprint = Blueprint("storage", "/storage", version=1)
 storage_blueprint.add_route(StorageView.as_view(), "")
+storage_blueprint.add_route(GetStorageView.as_view(), "/get_file")

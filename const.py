@@ -112,6 +112,10 @@ class ErrorCode(EnumBase):
     # 微信请求异常
     GetAccessTokenError = "10000601"
 
+    # 文件路径异常
+    FilePathError = "10000701"
+    FileNotExists = "10000702"
+
 
 class ErrorMsg(EnumBase):
     """
@@ -158,6 +162,10 @@ class ErrorMsg(EnumBase):
 
     # 微信异常
     GetAccessTokenError = "获取微信token异常"
+
+    # 文件异常
+    FilePathError = "文件路径异常"
+    FileNotExists = "文件不存在"
 
 
 class RedisKey:

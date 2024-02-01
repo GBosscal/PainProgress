@@ -6,7 +6,7 @@
 @Description: 
 """
 import base64
-
+import os
 from model.pain_data import Pain
 from const import ErrorCode
 from pain_model.convert import convert_img
@@ -29,6 +29,17 @@ class PainService:
         return pain_data.to_dict()
 
     @classmethod
+    async def get_file(cls, file_path):
+        """
+        通过路径获取文件
+        """
+        if os.path.exists(file_path):
+            with open(file_path, "r+") as f:
+                return f.read()
+        else:
+            return ErrorCode.FileNotExists
+
+    @classmethod
     async def get_pain_data_by_patient_id(cls, patient_id):
         """
         获取患者的疼痛数据
@@ -47,19 +58,21 @@ class PainService:
         """
         data_list = await cls.get_pain_data_by_patient_id(patient_id)
         for index, data in enumerate(data_list):
-            absolute_path, convert_image_path = build_travel_storage_path(data['patient_id'], data["pain_data_path"])
-            data["convert_image_path"] = get_base64_for_image(convert_image_path)
+            absolute_path, convert_image_path = build_travel_storage_path(data['patient_id'], data["pain_data"])
+            data["convert_image_path"] = get_base64_for_image(data["pain_data"])
             data["image_data"] = get_base64_for_image(absolute_path)
             data_list[index] = data
         return data_list
 
     @classmethod
-    async def add_pain_data(cls, patient_id, pain_level_custom, pain_data_path):
+    async def add_pain_data(cls, patient_id, pain_level_custom, pain_data_path, record_path, comment):
         """
         增加一条患者的疼痛数据
         :param patient_id: 患者ID
         :param pain_level_custom: 患者自定义的疼痛级别
         :param pain_data_path: 疼痛数据的路经
+        :param record_path: 录音文件路径
+        :param comment: 备注
         :return:
         """
         absolute_path, convert_image_path = build_travel_storage_path(patient_id, pain_data_path)
@@ -72,35 +85,43 @@ class PainService:
         else:
             pain_level, convert_image = None, ""
         if not Pain.add_pain_data(
-                patient_id=patient_id, pain_level_custom=pain_level_custom,
-                pain_data=pain_data_path, pain_level=pain_level
+                patient_id=patient_id, pain_level_custom=pain_level_custom, record_path=record_path,
+                pain_data=pain_data_path, pain_level=pain_level, comment=comment
         ):
             return ErrorCode.PainAddError, None
         return ErrorCode.Success, {"covert_image": convert_image, "pain_level": pain_level}
 
     @classmethod
-    async def add_pain_data_with_image(cls, patient_id, pain_level_custom, pain_data):
+    async def add_pain_data_with_image(cls, patient_id, pain_level_custom, pain_data, record_file, comment):
         """
         增加一条患者的疼痛数据（包括图片）
         :param patient_id: 患者ID
         :param pain_level_custom: 患者自定义的疼痛等级
         :param pain_data: 疼痛影像的数据（流数据）
+        :param record_file: 录音文件
+        :param comment: 备注信息
         :return:
         """
         # 先把流数据落盘
         storage_path = build_storage_path(patient_id, pain_data.name)
         if not storage_data(pain_data.body, storage_path):
             return ErrorCode.UploadDataError, None
+        # 录音数据落盘
+        record_path = build_storage_path(patient_id, record_file.name)
+        if not storage_data(record_file.body, record_path):
+            return ErrorCode.UploadDataError
         # 创建一条患者的疼痛数据
-        return await cls.add_pain_data(patient_id, pain_level_custom, pain_data.name)
+        return await cls.add_pain_data(patient_id, pain_level_custom, pain_data.name, record_path, comment)
 
     @classmethod
-    async def update_pain_data(cls, pain_id, pain_level_custom, pain_data_path):
+    async def update_pain_data(cls, pain_id, pain_level_custom, pain_data_path, record_path, comment):
         """
         更新一条患者的疼痛数据
         :param pain_id: 疼痛数据的ID
         :param pain_level_custom: 患者自定义的疼痛等级
         :param pain_data_path: 疼痛数据的路经
+        :param record_path: 录音文件路径
+        :param comment: 备注
         :return:
         """
         # 查询患者的数据是否存在
@@ -111,33 +132,39 @@ class PainService:
         _, convert_image_path = build_travel_storage_path(pain_data.patient_id, pain_data_path)
         pain_level = convert_img(pain_data_path, convert_image_path)
         # 更新患者疼痛的数据
-        if not Pain.update_pain_data(pain_level_custom, pain_data_path, pain_data, pain_level):
+        if not Pain.update_pain_data(pain_level_custom, pain_data_path, pain_data, pain_level, record_path, comment):
             return ErrorCode.PainUpdateError, None
         # 返回画了框的图像的base64数据
         convert_image = get_base64_for_image(convert_image_path)
         return ErrorCode.Success, {"covert_image": convert_image, "pain_level": pain_level}
 
     @classmethod
-    async def update_pain_data_with_image(cls, pain_id, pain_level_custom, pain_data):
+    async def update_pain_data_with_image(cls, pain_id, pain_level_custom, pain_data, record_file, comment):
         """
         更新一条患者的疼痛数据（包括图片）
         :param pain_id: 疼痛数据的ID
         :param pain_level_custom: 患者自定义的疼痛等级
         :param pain_data: 疼痛的图片
+        :param record_file: 录音文件
+        :param comment: 备注信息
         :return:
         """
         # 先校验患者是否存在
         pain_info = Pain.query_pain_data_by_id(pain_id)
         if not pain_info:
             return ErrorCode.PainDataNotExists
-        # 数据落盘
+        # 录音数据落盘
+        record_path = build_storage_path(pain_id.patient_id, record_file.name)
+        if not storage_data(record_file.body, record_path):
+            return ErrorCode.UploadDataError
+        # 疼痛数据落盘
         absolute_path, convert_image_path = build_travel_storage_path(pain_info.patient_id, pain_data.name)
         if not storage_data(pain_data.body, absolute_path):
             return ErrorCode.UploadDataError
         # 更新模型标注数据
         pain_level = convert_img(absolute_path, convert_image_path)
         # 更新患者疼痛的数据
-        if not Pain.update_pain_data(pain_level_custom, absolute_path, pain_info, pain_level):
+        if not Pain.update_pain_data(pain_level_custom, absolute_path, pain_info, pain_level, record_path, comment):
             return ErrorCode.PainUpdateError, None
         return ErrorCode.Success, convert_image_path
 

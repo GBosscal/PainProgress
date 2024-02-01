@@ -18,12 +18,16 @@ class CreatePainData:
     patient_id: str
     pain_level_custom: int
     pain_data_path: str
+    record_path: str
+    comment: str
 
 
 class UpdatePainData:
     pain_id: str
     pain_level_custom: int
     pain_data_path: str
+    record_path: str
+    comment: str
 
 
 class DeletePainData:
@@ -51,7 +55,10 @@ class PainDataView(HTTPMethodView):
         patient_id = request.json.get("patient_id")
         pain_level_custom = request.json.get("pain_level_custom")
         pain_data_path = request.json.get("pain_data_path")
-        service_code, data = await PainService.add_pain_data(patient_id, pain_level_custom, pain_data_path)
+        record_path = request.json.get("record_path")
+        comment = request.json.get("comment")
+        service_code, data = await PainService.add_pain_data(
+            patient_id, pain_level_custom, pain_data_path, record_path, comment)
         return response(service_code, data)
 
     @openapi.summary("更新疼痛数据")
@@ -64,7 +71,10 @@ class PainDataView(HTTPMethodView):
         pain_id = request.json.get("pain_id")
         pain_level_custom = request.json.get("pain_level_custom")
         pain_data_path = request.json.get("pain_data_path")
-        service_code, data = await PainService.update_pain_data(pain_id, pain_level_custom, pain_data_path)
+        record_path = request.json.get("record_path")
+        comment = request.json.get("comment")
+        service_code, data = await PainService.update_pain_data(
+            pain_id, pain_level_custom, pain_data_path, record_path, comment)
         return response(service_code, data)
 
     @openapi.summary("删除疼痛数据")
@@ -87,6 +97,8 @@ class ImagePainData:
     pain_data: str
     patient_id: int
     pain_level_custom: int
+    recording_file: str
+    comment: str
 
 
 class PainDataWithUploadDownloadView(HTTPMethodView):
@@ -115,22 +127,27 @@ class PainDataWithUploadDownloadView(HTTPMethodView):
         # 获取疼痛数据
         patient_id = request.form.get("patient_id")
         pain_level_custom = request.form.get("pain_level_custom")
-        service_code, data = await PainService.add_pain_data_with_image(patient_id, pain_level_custom, file_data)
+        record_file = request.files.get("record_file")
+        comment = request.form.get("comment")
+        service_code, data = await PainService.add_pain_data_with_image(
+            patient_id, pain_level_custom, file_data, record_file, comment)
         return response(service_code, data)
 
-    @openapi.summary("获取疼痛数据")
-    @openapi.description("获取疼痛数据")
+    @openapi.summary("更新疼痛数据")
+    @openapi.description("更新疼痛数据")
     @openapi.definition(
         body={"application/form-data": ImagePainData}
     )
     @openapi.tag("疼痛数据管理-集成图像处理")
     async def put(self, request):
-        # 获取图片数据
-        file_data = request.files.get("pain_data")
-        # 获取疼痛数据
-        pain_id = request.json.get("pain_id")
-        pain_level_custom = request.json.get("pain_level_custom")
-        service_code, data = await PainService.update_pain_data_with_image(pain_id, pain_level_custom, file_data)
+        data = {
+            "pain_data": request.files.get("pain_data"),  # 获取图片数据
+            "record_file": request.files.get("record_file"),  # 获取录音文件
+            "comment": request.form.get("comment"),  # 获取备注信息
+            "pain_id": request.form.get("pain_id"),  # 获取疼痛数据
+            "pain_level_custom": request.form.get("pain_level_custom")  # 获取疼痛数据
+        }
+        service_code, data = await PainService.update_pain_data_with_image(**data)
         return response(service_code, data)
 
     @openapi.summary("删除疼痛数据")
