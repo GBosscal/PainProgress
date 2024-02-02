@@ -36,7 +36,10 @@ class Pain(BaseModel):
 
     def to_dict(self):
         # _, pain_data_path = build_storage_path(self.patient_id, self.pain_data_path)
-        record_path = build_storage_path(self.patient_id, self.record_path)
+        if self.record_path:
+            record_path = build_storage_path(self.patient_id, self.record_path)
+        else:
+            record_path = ""
         return {
             "patient_id": self.patient_id, "pain_level_custom": self.pain_level_custom,
             "pain_level": self.pain_level, "pain_data": self.pain_data_path,
