@@ -29,13 +29,15 @@ class PainService:
         return pain_data.to_dict()
 
     @classmethod
-    async def get_file(cls, file_path):
+    async def file_exists(cls, file_path):
         """
-        通过路径获取文件
+        判断文件是否存在
         """
         if os.path.exists(file_path):
-            with open(file_path, "r+") as f:
-                return f.read()
+            # 判断文件是否能通过读的形式进行
+            return True
+            # with open(file_path, "r+") as f:
+            #     return f.read()
         else:
             return ErrorCode.FileNotExists
 

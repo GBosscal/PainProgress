@@ -21,6 +21,7 @@ def get_mime_type_and_name(file_path):
         '.mp3': 'audio/mpeg',
         '.wav': 'audio/wav',
         '.ogg': 'audio/ogg',
+        '.m4a': 'audio/x-m4a',
         # 添加更多的扩展名和对应的 MIME 类型
     }
 

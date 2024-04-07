@@ -67,7 +67,7 @@ class GetStorageView(HTTPMethodView):
         record_path = request.args.get("record_path")
         if not record_path.startswith("pain_data/patient"):
             return response(ErrorCode.FilePathError)
-        file_data = await PainService.get_file(record_path)
+        file_data = await PainService.file_exists(record_path)
         if isinstance(file_data, ErrorCode):
             return response(file_data)
         mime_type, file_name = get_mime_type_and_name(record_path)
