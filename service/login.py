@@ -21,18 +21,31 @@ class LoginService:
         token = hash_string_with_timestamp(user_id)
         # set_redis_data(f"token:{token}", user_id, 60 * 60)
         return token
+    
+    @classmethod
+    def _get_user_code(cls, code):
+        # 请求微信官方
+        status, user_data = get_user_info_by_code(code)
+        if status != ErrorCode.Success:
+            return status
+        # 暂时先用openID
+        user_code = user_data.get("openid")
+        return user_code
 
     @classmethod
     async def login(cls, code):
         """
         通过微信Code登陆
         """
-        # 请求微信官方
-        status, user_data = get_user_info_by_code(code)
-        if status != ErrorCode.Success:
-            return status, None
-        # 暂时先用openID
-        user_code = user_data.get("openid")
+        # # 请求微信官方
+        # status, user_data = get_user_info_by_code(code)
+        # if status != ErrorCode.Success:
+        #     return status, None
+        # # 暂时先用openID
+        # user_code = user_data.get("openid")
+        user_code = cls._get_user_code(code)
+        if isinstance(user_code, ErrorCode):
+            return user_code, None
         # 查询用户是否已经注册
         user_info = User.query_user_by_unionid(user_code)
         if not user_info:
@@ -65,8 +78,10 @@ class LoginService:
             return ErrorCode.UserPasswordError, None
         # 登陆后要设定使用时长，比如1h
         token = cls._set_token(user_info.id)
-        # 更新用户登陆使用的open——id
-        User.update_user_login_openid(user_info, code)
+        # 更新用户登陆使用的user_code
+        user_code = cls._get_user_code(code)
+        if not isinstance(user_code, ErrorCode):
+            User.update_user_login_openid(user_info, user_code)
         # 直接将用户信息返回给前端
         user_info = user_info.to_dict()
         user_info = await UserService.update_user_info(user_info)
@@ -82,6 +97,9 @@ class LoginService:
         """
         通过微信的code，获取登陆过的用户id以及名称
         """
-        user_list = User.query_user_by_code(code)
+        user_code = cls._get_user_code(code)
+        if isinstance(user_code, ErrorCode):
+            return []
+        user_list = User.query_user_by_code(user_code)
         users = [{"name": user["user_name"], "id": user["unionid"]} for user in user_list]
         return users
