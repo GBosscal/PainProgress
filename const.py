@@ -9,11 +9,14 @@ PainDataPath = "pain_data"
 # Token密钥
 AppSecretKey = b'painData12345678'
 
-# APP ID
-AppID = "wx9acf3f3f48c20d8d"
+# # APP ID
+# AppID = "wx86ee9e0e5ac44253"
 
-# APP Secret
-AppSecret = "93e62d1d3535a4abb8ebcd37b0dcc4f0"
+# # APP Secret
+# AppSecret = "93e62d1d3535a4abb8ebcd37b0dcc4f0"
+
+AppID = "wx86ee9e0e5ac44253"
+AppSecret = "900dcaab852d3f3ab3b9dec2b41f0e08"
 
 # 人脸模型权重
 detection_model_path = 'pain_model/weight/haarcascade_frontalface_default.xml'

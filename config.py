@@ -35,9 +35,22 @@ class RedisConfig:
     RedisPSWD = os.environ.get("redis_pswd", "painData13579@!@!@!")
     RedisDataBase = int(os.environ.get("redis_db", "0"))
 
+class APPConfig:
+    # APP ID
+    AppID = os.environ.get("app_id", "")
 
-class Config(MysqlConfig, SystemConfig, RedisConfig):
+    # APP Secret
+    AppSecret = os.environ.get("app_secret", "")
+
+    if not all([AppID, AppSecret]):
+        print("Warning !!!, 没有输入AppID或者AppSecrtet, 系统将无法访问微信后端。")
+
+
+
+class Config(MysqlConfig, SystemConfig, RedisConfig, APPConfig):
 
     @classmethod
     def get_mysql_url(cls):
         return f"mysql+pymysql://{cls.MysqlUserName}:{cls.MysqlPSWD}@{cls.MysqlHost}:{cls.MysqlPort}/{cls.MysqlDataBase}"
+    
+
